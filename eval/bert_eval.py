@@ -14,6 +14,8 @@ import json
 # Our packages
 from eval.rouge_l import RougeLEval
 from summ.lsa import LSASummarizer
+
+# BERTScore import
 from bert_score import BERTScorer
 
 from tqdm import tqdm
@@ -50,13 +52,18 @@ cand_summs = []
 for x in range(len(gen_summs)):
     cand_summs.append(gen_summs[x][0])
 
-scorer = BERTScorer(lang='fr', rescale_with_baseline=False)
+scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
 
 P, R, F1 = scorer.score(cand_summs, ref_summs, verbose=True)
 print(P, R, F1, sep='\n')
 # P = precision
 # R = recall
-# F1 = F1
+# F1 = F1-score
+
+# average of all scores for dataset
+print(f'Precision average: {P.mean()}')
+print(f'Recall average: {R.mean()}')
+print(f'F1-Score average {F1.mean()}')
 
 # Plots a similarity matrix showing the relation between all words in extracted summary to all words in reference summary
 scorer.plot_example(cand_summs[3], ref_summs[3])
