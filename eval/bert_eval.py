@@ -47,18 +47,24 @@ for k, v in results.items():
 # BERTScore Implementation
 # you can copy this code to the bottom of main.ipynb to see the outputs
 
-# loop to get a list of only the unstemmed extracted summaries
-cand_summs = []
-for x in range(len(gen_summs)):
-    cand_summs.append(gen_summs[x][0])
+def bert_score(ref_summs, gen_summs):
+    cand_summs = []
+    for x in range(len(gen_summs)):
+        cand_summs.append(gen_summs[x][0])
 
-scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
+    scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
 
-P, R, F1 = scorer.score(cand_summs, ref_summs, verbose=True)
-print(P, R, F1, sep='\n')
-# P = precision
-# R = recall
-# F1 = F1-score
+    P, R, F1 = scorer.score(cand_summs, ref_summs, verbose=True)
+    print(P, R, F1, sep='\n')
+    # P = precision
+    # R = recall
+    # F1 = F1-score
+    results = {}
+    results["Long precision avg"] = P.mean()
+    results["Long recall avg"] = R.mean()
+    results["Long F1-score avg"] = F1.mean()
+    
+    return results
 
 # average of all scores for dataset
 print(f'Precision average: {P.mean()}')
