@@ -46,20 +46,22 @@ results = rouge_l.get_results(scores1, scores2)
 for k, v in results.items():
     print(k.ljust(25), round(v*100, 3), '%')
 
-# Loop to separate long and short summaries from dataset
-long_summs = []
-short_summs = []
-for x in range(len(gen_summs)):
-    long_summs.append(gen_summs[x][0])
-    short_summs.append(gen_summs[x][1])
 
 # BERTScore Implementation
 # you can copy this code to the bottom of main.ipynb to see the outputs
 
 def bert_score(ref_summ, gen_summ):
+
+    # Loop to separate long and short summaries from dataset
+    long_summs = []
+    short_summs = []
+    for x in range(len(gen_summ)):
+        long_summs.append(gen_summ[x][0])
+        short_summs.append(gen_summ[x][1])
+        
     scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
 
-    P_long, R_long, F1_long = scorer.score(gen_summ, ref_summ, verbose=True)
+    P_long, R_long, F1_long = scorer.score(long_summs, ref_summ, verbose=True)
     # P = precision
     # R = recall
     # F1 = F1-score
@@ -71,5 +73,5 @@ def bert_score(ref_summ, gen_summ):
 
     return results
 
-bert_score(ref_summs, long_summs)
+bert_score(ref_summs, gen_summs)
 #scorer.plot_example(gen_summs[0], ref_summs[0])
