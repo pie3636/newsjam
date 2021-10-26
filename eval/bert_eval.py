@@ -46,59 +46,30 @@ results = rouge_l.get_results(scores1, scores2)
 for k, v in results.items():
     print(k.ljust(25), round(v*100, 3), '%')
 
+# Loop to separate long and short summaries from dataset
+long_summs = []
+short_summs = []
+for x in range(len(gen_summs)):
+    long_summs.append(gen_summs[x][0])
+    short_summs.append(gen_summs[x][1])
 
 # BERTScore Implementation
 # you can copy this code to the bottom of main.ipynb to see the outputs
 
-class BertScore_Eval:
-    def __init__(self):
-        self.nlp = spacy.load("fr_core_news_sm") # Model trained on French News
-        pass
+def bert_score(ref_summ, gen_summ):
+    scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
 
-    def bert_score(self, ref_summ, gen_summ):
-        long_summ, short_summ = gen_summ
+    P_long, R_long, F1_long = scorer.score(gen_summ, ref_summ, verbose=True)
+    # P = precision
+    # R = recall
+    # F1 = F1-score
 
-        summ = self.nlp(ref_summ)
-        summ_sentences = []
-        summ_cur_sentence = []
-        for sent in summ.sents:
-            for token in sent:
-                if not token.text.lower() in STOP_WORDS and not token.is_punct:
-                    summ_cur_sentence.append(token.lemma_)
-            summ_sentences.append(summ_cur_sentence)
-            summ_cur_sentence = []
+    results = {}
+    results["Long precision avg"] = P_long.mean()
+    results["Long recall avg"] = R_long.mean()
+    results["Long F1-score avg"] = F1_long.mean()
 
-        #cand_summs_long = []
-        #for x in range(len(gen_summ)):
-            #cand_summs.append(gen_summ[x][0])
+    return results
 
-        scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
-
-        P_long, R_long, F1_long = scorer.score(long_summ, summ, verbose=True)
-        P_key, R_key, F1_key = scorer.score(short_summ, summ_sentences, verbose=True)
-        # P = precision
-        # R = recall
-        # F1 = F1-score
-
-        results = {}
-        results["Long precision avg"] = P_long.mean()
-        results["Long recall avg"] = R_long.mean()
-        results["Long F1-score avg"] = F1_long.mean()
-        results["Keyword precision avg"] = P_key.mean()
-        results["Keyword recall avg"] = R_key.mean()
-        results["Keyword F1-score avg"] = F1_key.mean()
-
-        return results
-
-
-bert_score = BertScore_Eval.bert_score()
-bert_score(gen_summs, ref_summs)
-
-
-# average of all scores for dataset
-#print(f'Precision average: {P.mean()}')
-#print(f'Recall average: {R.mean()}')
-#print(f'F1-Score average {F1.mean()}')
-
-# Plots a similarity matrix showing the relation between all words in extracted summary to all words in reference summary
-#scorer.plot_example(cand_summs[3], ref_summs[3])
+bert_score(long_summs, ref_summs)
+#scorer.plot_example(gen_summs[0], ref_summs[0])
