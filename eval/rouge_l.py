@@ -88,10 +88,10 @@ class RougeLEval:
 
 		results = {}
 		results["Long precision avg"] = sum(map(lambda x: x['rougeL'][0], long_scores)) / data_len
-		results["Keyword precision avg"] = sum(map(lambda x: x['rougeL'][1], long_scores)) / data_len
 		results["Long recall avg"] = sum(map(lambda x: x['rougeL'][2], long_scores)) / data_len
+		results["Long F1-score avg"] = sum(map(lambda x: x['rougeL'][1], long_scores)) / data_len
+		results["Keyword precision avg"] = sum(map(lambda x: x['rougeL'][1], keyword_scores)) / data_len
 		results["Keyword recall avg"] = sum(map(lambda x: x['rougeL'][0], keyword_scores)) / data_len
-		results["Long F1-score avg"] = sum(map(lambda x: x['rougeL'][1], keyword_scores)) / data_len
 		results["Keyword F1-score avg"] = sum(map(lambda x: x['rougeL'][2], keyword_scores)) / data_len
 
 		return results
