@@ -71,5 +71,5 @@ def bert_score(ref_summ, gen_summ):
 
     return results
 
-bert_score(long_summs, ref_summs)
+bert_score(ref_summs, long_summs)
 #scorer.plot_example(gen_summs[0], ref_summs[0])
