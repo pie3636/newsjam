@@ -1,69 +1,31 @@
-# Not a final version of the BERTScore implemenation; this was just to test it out on the scraped data
-
-# For the first execution, you will need to uncomment this line
-# to download the SpaCy model and other necessary packages. Then you can comment it back
-# !python -m spacy download fr_core_news_sm
-# !python -m pip install ipynb
-
-# MLSUM Corpus
-from datasets import load_dataset
-
-# Loading article data
-import json
-
-# Our packages
-#from eval.rouge_l import RougeLEval
-#from summ.lsa import LSASummarizer
-
-import spacy
-from spacy.lang.fr.stop_words import STOP_WORDS
-
-# BERTScore import
-from bert_score import BERTScorer
-
-from tqdm import tqdm
-
-dataset = load_dataset('mlsum', 'fr')
-
-#rouge_l = RougeLEval()
-#lsa_summ = LSASummarizer()
-
-
-# Summarization run on scraped data
-with open('data/actu_preliminary.json', 'r', encoding='utf-8') as jsonfile:
-    data = json.load(jsonfile)
-
-texts = [article['text'] for article in data]
-ref_summs = [article['summary'] for article in data]
-
-gen_summs = []
-for text in tqdm(texts):
-    gen_summs.append(lsa_summ.get_summary(text))
-
-scores1, scores2 = rouge_l.evaluate_many(ref_summs, gen_summs)
-results = rouge_l.get_results(scores1, scores2)
-
-for k, v in results.items():
-    print(k.ljust(25), round(v*100, 3), '%')
-
-
 # BERTScore Implementation
-# you can copy this code to the bottom of main.ipynb to see the outputs
+# I plan on putting all of these into a class later, so we can easily use them in the main file
+# for now, you can copy this code to the bottom of main.ipynb to see the outputs/test it on our data
 
-def bert_score(ref_summ, gen_summ):
+# *Note* I've tried running the bert_score on one article and it does not seem to work, I think input needs to be a list of sentences
+
+
+def split_summs(gen_summs, ref_summs):
+
+    '''
+    Function to separate long and keyword summaries for generated and reference data
+    * I separated this from the actual evaluation so we could access all of these summaries to look at the matricies if we want
+    using the get_matrix function lower down in this file *
+    '''
+
     nlp = spacy.load("fr_core_news_sm")
 
-    # Loop to separate long and short summaries from dataset
-    # tried just unpacking the two variables from gen_summ like in rouge_l.py but it wasn't working for me
+    # tried just unpacking the two variables from gen_summs but it wasn't working for me, I have no idea why
+    # so I made a for loop to do the same thing
     long_summs = []
     short_summs = []
-    for x in range(len(gen_summ)):
-        long_summs.append(gen_summ[x][0])
-        short_summs.append(gen_summ[x][1])
+    for x in range(len(gen_summs)):
+        long_summs.append(gen_summs[x][0])
+        short_summs.append(gen_summs[x][1])
 
     summ_sentences = []
     summ_cur_sentence = []
-    for summ in ref_summ:
+    for summ in ref_summs:
         summ = nlp(summ)
         for sent in summ.sents:
             for token in sent:
@@ -74,9 +36,23 @@ def bert_score(ref_summ, gen_summ):
 
     key_ref_summs = [' '.join(sent) for sent in summ_sentences]
 
+    return long_summs, short_summs, ref_summs, key_ref_summs
+
+
+def bert_score(long_summs, short_summs, ref_summs, key_ref_summs):
+
+    '''
+    Function to compute the bert_scores for all the data
+    * At this point I have the function working for the long summaries, but the keyword summary computation
+    gives me an error relating to a mismatch of tensor sizes (need to look into further)
+    '''
+
+    # Instantiation of BERTScore
     scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
 
-    P_long, R_long, F1_long = scorer.score(long_summs, ref_summ, verbose=True)
+    P_long, R_long, F1_long = scorer.score(long_summs, ref_summs, verbose=True)
+
+    # Commented out because keyword summary evaluation is not currently working
     #P_key, R_key, F1_key = scorer.score(short_summs, key_ref_summs, verbose=True)
     # P = precision
     # R = recall
@@ -86,14 +62,31 @@ def bert_score(ref_summ, gen_summ):
     results["Long precision avg"] = P_long.mean()
     results["Long recall avg"] = R_long.mean()
     results["Long F1-score avg"] = F1_long.mean()
+
+    # Commented out because keyword summary evaluation is not currently working
     #results["Keyword precision avg"] = P_key.mean()
     #results["Keyword recall avg"] = R_key.mean()
     #results["Keyword F1-score avg"] = F1_key.mean()
 
     return results
 
-bert_score(ref_summs, gen_summs)
 
-# Will try to get working with function above, so we can see keyword matrix as well
+def get_matrix(gen_summ, ref_summ, index):
 
-#scorer.plot_example(gen_summs[0], ref_summs[0])
+    '''
+    Function to look at the relation matrix between any two generated and reference summaries
+    '''
+
+    scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
+    matrix = scorer.plot_example(gen_summ[index], ref_summ[index])
+
+    return matrix
+
+# Calling the split_summs function and storing outputs into variables to be used in last two functions
+long_summs, short_summs, ref_summs, key_ref_sums =  split_summs(gen_summs, ref_summs)
+
+# Calling the bert_score function
+bert_score(long_summs, short_summs, ref_summs, key_ref_sums)
+
+# Calling the get_matrix function
+get_matrix(long_summs[0], ref_summs[0])
