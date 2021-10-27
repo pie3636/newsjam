@@ -71,11 +71,13 @@ def bert_score(ref_summ, gen_summ):
                     summ_cur_sentence.append(token.lemma_)
             summ_sentences.append(summ_cur_sentence)
             summ_cur_sentence = []
-        
+
+    key_ref_summs = [' '.join(sent) for sent in summ_sentences]
+
     scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
 
     P_long, R_long, F1_long = scorer.score(long_summs, ref_summ, verbose=True)
-    P_key, R_key, F1_key = scorer.score(short_summs, summ_sentences, verbose=True)
+    #P_key, R_key, F1_key = scorer.score(short_summs, key_ref_summs, verbose=True)
     # P = precision
     # R = recall
     # F1 = F1-score
@@ -84,13 +86,14 @@ def bert_score(ref_summ, gen_summ):
     results["Long precision avg"] = P_long.mean()
     results["Long recall avg"] = R_long.mean()
     results["Long F1-score avg"] = F1_long.mean()
-    results["Keyword precision avg"] = P_key.mean()
-    results["Keyword recall avg"] = R_key.mean()
-    results["Keyword F1-score avg"] = F1_key.mean()
+    #results["Keyword precision avg"] = P_key.mean()
+    #results["Keyword recall avg"] = R_key.mean()
+    #results["Keyword F1-score avg"] = F1_key.mean()
 
     return results
 
 bert_score(ref_summs, gen_summs)
 
 # Will try to get working with function above, so we can see keyword matrix as well
+
 #scorer.plot_example(gen_summs[0], ref_summs[0])
