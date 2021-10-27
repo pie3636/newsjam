@@ -96,6 +96,8 @@ class BERT_Eval:
 
 
 # Example of how functions could be implemented in main.ipynb
+# just don't forget to add class name before each of the functions
+
 # Calling the split_summs function and storing outputs into variables to be used in last two functions
 #long_summs, short_summs, ref_summs, key_ref_sums =  split_summs(gen_summs, ref_summs)
 
@@ -103,4 +105,4 @@ class BERT_Eval:
 #bert_score(long_summs, short_summs, ref_summs, key_ref_sums)
 
 # Calling the get_matrix function
-#get_matrix(long_summs[0], ref_summs[0])
+#get_matrix(long_summs, ref_summs, 4)
