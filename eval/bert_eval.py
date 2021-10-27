@@ -1,3 +1,11 @@
+# BERTScore import
+# you can install this package by running pip install bert-score
+from bert_score import BERTScorer
+
+# spacy import; to create keyword reference summary
+import spacy
+from spacy.lang.fr import STOP_WORDS
+
 # BERTScore Implementation
 # I plan on putting all of these into a class later, so we can easily use them in the main file
 # for now, you can copy this code to the bottom of main.ipynb to see the outputs/test it on our data
