@@ -65,6 +65,10 @@ class BertEmbeddingsSummarizer:
         # Get embeddings for all keywords in a sentence
         for i, sent in enumerate(doc.sents):
             tokenized_sent = self.tokenizer.tokenize(sent.text)
+            # Skip empty sentences
+            if not tokenized_sent:
+                continue
+            
             # Get embeddings of all the words in the sentence
             sentence_embeds = self.get_sent_embeds(tokenized_sent)
             
