@@ -45,7 +45,7 @@ def get_keyword_sentences(doc):
     return sentences
 
 
-def build_summary(top_scores, doc, sentences):
+def build_summary(top_scores, doc, sentences, max_len=280):
     """
         Builds a summary from the indices of the best sentences in the text for a given method
         Arguments:
@@ -56,7 +56,7 @@ def build_summary(top_scores, doc, sentences):
             - The generated summary in text form
             - A keywords-only version of the generated summary
     """
-    
+
     # Sort the tables so that they contain the words in decreasing score order
     for elem in top_scores:
         elem.sort(reverse=True, key=lambda x: x[1])
@@ -64,7 +64,7 @@ def build_summary(top_scores, doc, sentences):
     # Get a list of all sentences in decreasing order of importance
     all_sents = list(doc.sents)
     top_sentences = get_top_sentences(top_scores, len(all_sents) + 1)
-    
+
     # Try to add each sentence to the summary, starting from the best one
     # and making sure to not go over a tweet's length
     sents_to_add = []
@@ -72,7 +72,7 @@ def build_summary(top_scores, doc, sentences):
     for i in top_sentences:
         full_sent = all_sents[i].text
         new_size = summary_size + len(full_sent)
-        if summary_size + new_size <= 280:
+        if summary_size + new_size <= max_len:
             sents_to_add.append(i)
             summary_size += len(full_sent) + 1 # +1 because of the space/newline between sentences
 

@@ -10,8 +10,9 @@ from gensim.models import LsiModel
 from gensim.models.coherencemodel import CoherenceModel
 
 class LSASummarizer:
-    def __init__(self):
+    def __init__(self, max_len=280):
         self.nlp = spacy.load("fr_core_news_sm") # Model trained on French News
+        self.max_len = max_len
 
 
     def get_summary(self, article):
@@ -59,6 +60,6 @@ class LSASummarizer:
         for i, scores in enumerate(corpus_lsi):
             for j, score in scores:
                 top_scores[j].append((i, abs(score)))
-        
+
         # Pick the best summary using the computed scores
-        return build_summary(top_scores, doc, keyword_sentences)
+        return build_summary(top_scores, doc, keyword_sentences, self.max_len)
