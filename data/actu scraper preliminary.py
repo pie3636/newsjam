@@ -20,7 +20,6 @@ def actu_scraper(url):
 
     #bypasses the cookie popup and grabs the article
     button = driver.find_element(By.CSS_SELECTOR, "#didomi-notice-agree-button")
-    print(type(button))
     button.click()
     article = driver.find_elements(By.XPATH, "/html/body/div[2]/main/div/div[1]/div[1]")
     article_text = []
@@ -76,7 +75,7 @@ def autoscraper(url, file):
     element2 = driver.find_element(By.XPATH, '/html/body/div[2]/main/div/div[2]/div/div/ul').find_elements(By.TAG_NAME, 'a')
     test_element = []
     for element in element2:
-        if element.get_attribute('href')+'\n' not in temp_list:
+        if element.get_attribute('href')+'\n' not in temp_list: #duplicate check
             test_element.append(element.get_attribute("href"))
             outfile.write(element.get_attribute("href")+'\n')
         else:
@@ -90,12 +89,10 @@ def page_skipper(url, *page_num, file):
     '''
     url_list = []
     for x in range(*page_num):
-        url_list.append(autoscraper(url+'/page/{0}'.format(x), file))
+        url_list.append(autoscraper(url+'/page/{0}'.format(x), file)) #runs autoscraper, appending each url output as a list in a list
     url_list = [x for sublist in url_list for x in sublist] #flattens the list of lists to just a list
-    print("new articles added:", len(url_list))
+    print("new articles added:", len(url_list)) #simple check to see if there was any point in running the scraper
     return url_list
 
-json_converter(list(page_skipper('https://actu.fr/societe/coronavirus', 0, 20, file='masterlist_actu.txt')), 'test.json')
-
-
-
+json_converter(list(page_skipper('https://actu.fr/societe/coronavirus', 0, 20, file='masterlist_actu.txt')), 'test.json') #sample function call
+#note that you can type just one number, or you can include a range of pages you would like to include
