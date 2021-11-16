@@ -94,5 +94,5 @@ def page_skipper(url, *page_num, file):
     print("new articles added:", len(url_list)) #simple check to see if there was any point in running the scraper
     return url_list
 
-json_converter(list(page_skipper('https://actu.fr/societe/coronavirus', 0, 20, file='masterlist_actu.txt')), 'test.json') #sample function call
+json_converter(list(page_skipper('https://actu.fr/societe/coronavirus', 0, 20, file='actu_masterlist.txt')), 'test.json') #sample function call
 #note that you can type just one number, or you can include a range of pages you would like to include
