@@ -3,7 +3,7 @@ from bert_score import BERTScorer
 # to create keyword reference summary
 from spacy.lang.fr import STOP_WORDS
 
-import eval
+from .eval import Eval
 
 # BERTScore Implementation
 

@@ -1,5 +1,6 @@
 import string
 
+from .summarizer import Summarizer
 from .utils import build_summary, get_keyword_sentences, get_top_sentences
 
 # Various matrix/neural network modules
@@ -17,7 +18,6 @@ from spacy.lang.fr.stop_words import STOP_WORDS
 # K-means clustering
 from sklearn.cluster import KMeans
 
-from summarizer import Summarizer
 
 class BertEmbeddingsSummarizer(Summarizer):
     def __init__(self, model='flaubert/flaubert_large_cased', max_len=280):

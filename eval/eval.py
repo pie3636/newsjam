@@ -10,12 +10,12 @@ class Eval():
     
     
     def evaluate_one(self, ref_summ, gen_summ):
-		raise NotImplementedError('<Eval> is an abstract class. Please instantiate a child class to call this method.')
+        raise NotImplementedError('<Eval> is an abstract class. Please instantiate a child class to call this method.')
 
 
-	def evaluate_many(self, ref_summs, gen_summs, num_articles=None):
-		raise NotImplementedError('<Eval> is an abstract class. Please instantiate a child class to call this method.')
+    def evaluate_many(self, ref_summs, gen_summs, num_articles=None):
+        raise NotImplementedError('<Eval> is an abstract class. Please instantiate a child class to call this method.')
 
 
-	def get_results(self, long_scores, keyword_scores):
-		raise NotImplementedError('<Eval> is an abstract class. Please instantiate a child class to call this method.')
+    def get_results(self, long_scores, keyword_scores):
+        raise NotImplementedError('<Eval> is an abstract class. Please instantiate a child class to call this method.')

@@ -4,7 +4,7 @@ from spacy.lang.fr.stop_words import STOP_WORDS
 from rouge_score import rouge_scorer
 from tqdm import tqdm
 
-from eval import Eval
+from .eval import Eval
 
 class RougeLEval(Eval):
 	def __init__(self):

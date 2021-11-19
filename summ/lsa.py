@@ -1,3 +1,4 @@
+from .summarizer import Summarizer
 from .utils import build_summary, get_keyword_sentences, get_top_sentences
 
 # Models for Latent Semantic Indexing
@@ -6,7 +7,6 @@ from gensim import models
 from gensim.models import LsiModel
 from gensim.models.coherencemodel import CoherenceModel
 
-from summarizer import Summarizer
 
 class LSASummarizer(Summarizer):
     def __init__(self, max_len=280):
