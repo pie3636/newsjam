@@ -17,13 +17,15 @@ from spacy.lang.fr.stop_words import STOP_WORDS
 # K-means clustering
 from sklearn.cluster import KMeans
 
-class BertEmbeddingsSummarizer:
+from summarizer import Summarizer
+
+class BertEmbeddingsSummarizer(Summarizer):
     def __init__(self, model='flaubert/flaubert_large_cased', max_len=280):
-        self.nlp = spacy.load("fr_core_news_sm") # Model trained on French News
         self.model_name = model
         self.model = AutoModel.from_pretrained(model)
         self.tokenizer = AutoTokenizer.from_pretrained(model)
-        self.max_len = max_len
+
+        super().__init__(max_len)
 
     def get_sent_embeds(self, tokenized_sentence):
         """

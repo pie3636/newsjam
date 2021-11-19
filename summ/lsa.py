@@ -1,18 +1,16 @@
 from .utils import build_summary, get_keyword_sentences, get_top_sentences
 
-# SpaCy model for segmentation and tokenization
-import spacy
-
 # Models for Latent Semantic Indexing
 from gensim import corpora
 from gensim import models
 from gensim.models import LsiModel
 from gensim.models.coherencemodel import CoherenceModel
 
-class LSASummarizer:
+from summarizer import Summarizer
+
+class LSASummarizer(Summarizer):
     def __init__(self, max_len=280):
-        self.nlp = spacy.load("fr_core_news_sm") # Model trained on French News
-        self.max_len = max_len
+        super().__init__(max_len)
 
 
     def get_summary(self, article):

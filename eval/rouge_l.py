@@ -1,14 +1,14 @@
-import spacy
 from spacy.lang.fr.stop_words import STOP_WORDS
 
 # Evaluation
 from rouge_score import rouge_scorer
 from tqdm import tqdm
 
-class RougeLEval:
+from eval import Eval
+
+class RougeLEval(Eval):
 	def __init__(self):
-		self.nlp = spacy.load("fr_core_news_sm") # Model trained on French News
-		pass
+		super().__init__()
 
 
 	def evaluate_one(self, ref_summ, gen_summ):
@@ -55,8 +55,8 @@ class RougeLEval:
 		"""
 			Evaluates the summarization process for all articles in a set
 			Arguments:
-				`ref_summs`	A list containing the reference summaries of each article
-				`gen_summs`	A list containing the generated summaries of each article
+				`ref_summs` 	A list containing the reference summaries of each article
+				`gen_summs` 	A list containing the generated summaries of each article
 				`num_articles` The number of articles to evaluate (default: all)
 			Returns a tuple containing:
 				- The evaluation scores for all full generated summaries
@@ -80,7 +80,7 @@ class RougeLEval:
 			Computes the average evaluation scores from a list
 			Arguments:
 				`long_scores`		 A list containing all evaluation scores for full generated summaries
-				`keyword_scores` A list containing all evaluation scores for keyword-only generated summaries
+				`keyword_scores`     A list containing all evaluation scores for keyword-only generated summaries
 			Returns a dict containing the average precision, recall and f1-score
 				for both full and keyword_only generated summaries
 		"""

@@ -1,19 +1,18 @@
-# BERTScore import
-# you can install this package by running pip install bert-score
 from bert_score import BERTScorer
 
-# spacy import; to create keyword reference summary
-import spacy
+# to create keyword reference summary
 from spacy.lang.fr import STOP_WORDS
+
+import eval
 
 # BERTScore Implementation
 
 # *Note* I've tried running the bert_score on one article and it does not seem to work, I think input needs to be a list of sentences
 
-class BERT_Eval:
+class BERT_Eval(Eval):
     def __init__(self):
-        self.nlp = spacy.load("fr_core_news_sm")
-        pass
+        self.scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
+        super().__init__()
 
     def split_summs(self, gen_summs, ref_summs):
 
@@ -57,11 +56,8 @@ class BERT_Eval:
         gives me an error relating to a mismatch of tensor sizes (need to look into further)
         '''
 
-        # Instantiation of BERTScore
-        scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
-
-        P_long, R_long, F1_long = scorer.score(long_summs, ref_summs, verbose=True)
-        P_key, R_key, F1_key = scorer.score(short_summs, key_ref_summs, verbose=True)
+        P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
+        P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
         # P = precision
         # R = recall
         # F1 = F1-score
@@ -83,10 +79,7 @@ class BERT_Eval:
         Function to look at the relation matrix between any two generated and reference summaries
         '''
 
-        scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
-        matrix = scorer.plot_example(gen_summ[index], ref_summ[index])
-
-        return matrix
+        return self.scorer.plot_example(gen_summ[index], ref_summ[index])
 
 '''
 # Example of how functions could be implemented in main.ipynb
