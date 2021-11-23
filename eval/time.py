@@ -1,17 +1,21 @@
 from timeit import default_timer as timer
 from .eval import Eval
 
+from tqdm import tqdm
+
 class TimeEval(Eval):
     def __init__(self):
         super().__init__()
     
     
-    def evaluate_one(self, text, method):
+    def evaluate_one(self, text, method, *args, **kwargs):
         """
             Measures the summarization time of a method on one article
             Arguments:
                 `text`      The text to summarize
                 `method`    The summarization class to use
+                `args`      Positional arguments to pass to `method`
+                `kwargs`    Keyword arguments to pass to `method`
             Returns the execution time of the summarization method
         """
         
@@ -32,7 +36,7 @@ class TimeEval(Eval):
         """
         start = timer()
         method_instance = method()
-        for text in texts:
+        for text in tqdm(texts):
             method_instance.get_summary(text)
         end = timer()
         return (end - start)/len(texts)
