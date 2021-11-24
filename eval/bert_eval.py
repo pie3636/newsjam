@@ -7,7 +7,6 @@ from .eval import Eval
 
 # BERTScore Implementation
 
-# *Note* I've tried running the bert_score on one article and it does not seem to work, I think input needs to be a list of sentences
 
 class BERT_Eval(Eval):
     def __init__(self):
@@ -52,7 +51,10 @@ class BERT_Eval(Eval):
 
         '''
         Function to compute the bert_scores for all the data
+        * Add parameter x to look at score for only one article in data
         '''
+
+        # Condition to look at average score for whole dataset
         if x == None:
             P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
             P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
@@ -66,9 +68,9 @@ class BERT_Eval(Eval):
             results["Long F1-score avg"] = F1_long.mean()
             results["Keyword precision avg"] = P_key.mean()
             results["Keyword recall avg"] = R_key.mean()
-            results["Keyword F1-score avg"] = F1_key.mean()
+            results["Keyword F1-score avg"] = {F1_key.mean():.3f}
 
-        
+        # Condition to look at one score
         else:
             long_summ = [long_summs[x]]
             ref_summ = [ref_summs[x]]
