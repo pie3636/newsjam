@@ -68,7 +68,7 @@ class BERT_Eval(Eval):
             results["Long F1-score avg"] = F1_long.mean()
             results["Keyword precision avg"] = P_key.mean()
             results["Keyword recall avg"] = R_key.mean()
-            results["Keyword F1-score avg"] = {F1_key.mean():.3f}
+            results["Keyword F1-score avg"] = ('%.3f' % (F1_key.mean()))
 
         # Condition to look at one score
         else:
