@@ -48,17 +48,20 @@ class BERT_Eval(Eval):
         return long_summs, short_summs, ref_summs, key_ref_summs
 
 
-    def bert_score(self, long_summs, short_summs, ref_summs, key_ref_summs):
+    def bert_score(self, long_summs, short_summs, ref_summs, key_ref_summs, x=None):
 
         '''
         Function to compute the bert_scores for all the data
         '''
-
-        P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
-        P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
-        # P = precision
-        # R = recall
-        # F1 = F1-score
+        if x == None:
+            P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
+            P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
+            # P = precision
+            # R = recall
+            # F1 = F1-score
+        else:
+            P_long, R_long, F1_long = self.scorer.score(long_summs[x], ref_summs[x], verbose=True)
+            P_key, R_key, F1_key = self.scorer.score(short_summs[x], key_ref_summs[x], verbose=True)
 
         results = {}
         results["Long precision avg"] = P_long.mean()
