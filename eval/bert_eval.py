@@ -63,12 +63,12 @@ class BERT_Eval(Eval):
             # F1 = F1-score
 
             results = {}
-            results["Long precision avg"] = P_long.mean()
-            results["Long recall avg"] = R_long.mean()
-            results["Long F1-score avg"] = F1_long.mean()
-            results["Keyword precision avg"] = P_key.mean()
-            results["Keyword recall avg"] = R_key.mean()
-            results["Keyword F1-score avg"] = ('%.3f' % (F1_key.mean()))
+            results["Long precision avg"] = ('%.4f' % (P_long.mean()))
+            results["Long recall avg"] = ('%.4f' % (R_long.mean()))
+            results["Long F1-score avg"] = ('%.4f' % (F1_long.mean()))
+            results["Keyword precision avg"] = ('%.4f' % (P_key.mean()))
+            results["Keyword recall avg"] = ('%.4f' % (R_key.mean()))
+            results["Keyword F1-score avg"] = ('%.4f' % (F1_key.mean()))
 
         # Condition to look at one score
         else:
@@ -81,12 +81,12 @@ class BERT_Eval(Eval):
             P_key, R_key, F1_key = self.scorer.score(short_summ, key_ref_summ, verbose=True)
 
             results = {}
-            results["Long precision avg"] = P_long
-            results["Long recall avg"] = R_long
-            results["Long F1-score avg"] = F1_long
-            results["Keyword precision avg"] = P_key
-            results["Keyword recall avg"] = R_key
-            results["Keyword F1-score avg"] = F1_key
+            results["Long precision avg"] = ('%.4f' % (P_long))
+            results["Long recall avg"] = ('%.4f' % (R_long))
+            results["Long F1-score avg"] = ('%.4f' % (F1_long))
+            results["Keyword precision avg"] = ('%.4f' % (P_key))
+            results["Keyword recall avg"] = ('%.4f' % (R_key))
+            results["Keyword F1-score avg"] = ('%.4f' % (F1_key))
 
         
         return results
