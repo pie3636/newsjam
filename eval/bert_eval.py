@@ -22,7 +22,7 @@ class BERT_Eval(Eval):
         using the get_matrix function lower down in this file *
         '''
 
-        nlp = spacy.load("fr_core_news_sm")
+        #nlp = spacy.load("fr_core_news_sm")
 
         # tried just unpacking the two variables from gen_summs but it wasn't working for me, I have no idea why
         # so I made a 'for loop' to do the same thing
@@ -52,8 +52,6 @@ class BERT_Eval(Eval):
 
         '''
         Function to compute the bert_scores for all the data
-        * At this point I have the function working for the long summaries, but the keyword summary computation
-        gives me an error relating to a mismatch of tensor sizes (need to look into further)
         '''
 
         P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
