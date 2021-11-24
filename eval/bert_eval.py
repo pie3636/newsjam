@@ -61,30 +61,30 @@ class BERT_Eval(Eval):
             # F1 = F1-score
 
             results = {}
-            results["Long precision avg"] = P_long.mean():.3f
-            results["Long recall avg"] = R_long.mean():.3f
-            results["Long F1-score avg"] = F1_long.mean():.3f
-            results["Keyword precision avg"] = P_key.mean():.3f
-            results["Keyword recall avg"] = R_key.mean():.3f
-            results["Keyword F1-score avg"] = F1_key.mean():.3f
+            results["Long precision avg"] = P_long.mean()
+            results["Long recall avg"] = R_long.mean()
+            results["Long F1-score avg"] = F1_long.mean()
+            results["Keyword precision avg"] = P_key.mean()
+            results["Keyword recall avg"] = R_key.mean()
+            results["Keyword F1-score avg"] = F1_key.mean()
 
         
         else:
             long_summ = [long_summs[x]]
             ref_summ = [ref_summs[x]]
             short_summ = [short_summs[x]]
-            key_ref_summ = [key_refsumms[x]]
+            key_ref_summ = [key_ref_summs[x]]
 
             P_long, R_long, F1_long = self.scorer.score(long_summ, ref_summ, verbose=True)
             P_key, R_key, F1_key = self.scorer.score(short_summ, key_ref_summ, verbose=True)
 
             results = {}
-            results["Long precision avg"] = P_long:.3f
-            results["Long recall avg"] = R_long:.3f
-            results["Long F1-score avg"] = F1_long:.3f
-            results["Keyword precision avg"] = P_key:.3f
-            results["Keyword recall avg"] = R_key:.3f
-            results["Keyword F1-score avg"] = F1_key:.3f
+            results["Long precision avg"] = P_long
+            results["Long recall avg"] = R_long
+            results["Long F1-score avg"] = F1_long
+            results["Keyword precision avg"] = P_key
+            results["Keyword recall avg"] = R_key
+            results["Keyword F1-score avg"] = F1_key
 
         
         return results
