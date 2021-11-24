@@ -47,7 +47,7 @@ class BERT_Eval(Eval):
         return long_summs, short_summs, ref_summs, key_ref_summs
 
 
-    def bert_score(self, long_summs, short_summs, ref_summs, key_ref_summs, x=None):
+    def bert_score(self, long_summs, short_summs, ref_summs, key_ref_summs, index=None):
 
         '''
         Function to compute the bert_scores for all the data
@@ -55,7 +55,7 @@ class BERT_Eval(Eval):
         '''
 
         # Condition to look at average score for whole dataset
-        if x == None:
+        if index == None:
             P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
             P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
             # P = precision
@@ -72,10 +72,10 @@ class BERT_Eval(Eval):
 
         # Condition to look at one score
         else:
-            long_summ = [long_summs[x]]
-            ref_summ = [ref_summs[x]]
-            short_summ = [short_summs[x]]
-            key_ref_summ = [key_ref_summs[x]]
+            long_summ = [long_summs[index]]
+            ref_summ = [ref_summs[index]]
+            short_summ = [short_summs[index]]
+            key_ref_summ = [key_ref_summs[index]]
 
             P_long, R_long, F1_long = self.scorer.score(long_summ, ref_summ, verbose=True)
             P_key, R_key, F1_key = self.scorer.score(short_summ, key_ref_summ, verbose=True)
