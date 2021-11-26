@@ -103,6 +103,7 @@ class BertEmbeddingsSummarizer(Summarizer):
         # Pick the best summary using the computed scores
         return build_summary(top_scores, doc, keyword_sentences, self.max_len)
 
+    def get_batch_summaries(self, article, num_clusters=5):
         """
             Similar to `get_summary` but works on a batch of sentences at once.
             Arguments:
