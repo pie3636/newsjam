@@ -7,7 +7,6 @@ from .eval import Eval
 
 # BERTScore Implementation
 
-# *Note* I've tried running the bert_score on one article and it does not seem to work, I think input needs to be a list of sentences
 
 class BERT_Eval(Eval):
     def __init__(self):
@@ -22,7 +21,7 @@ class BERT_Eval(Eval):
         using the get_matrix function lower down in this file *
         '''
 
-        nlp = spacy.load("fr_core_news_sm")
+        #nlp = spacy.load("fr_core_news_sm")
 
         # tried just unpacking the two variables from gen_summs but it wasn't working for me, I have no idea why
         # so I made a 'for loop' to do the same thing
@@ -48,28 +47,48 @@ class BERT_Eval(Eval):
         return long_summs, short_summs, ref_summs, key_ref_summs
 
 
-    def bert_score(self, long_summs, short_summs, ref_summs, key_ref_summs):
+    def bert_score(self, long_summs, short_summs, ref_summs, key_ref_summs, index=None):
 
         '''
         Function to compute the bert_scores for all the data
-        * At this point I have the function working for the long summaries, but the keyword summary computation
-        gives me an error relating to a mismatch of tensor sizes (need to look into further)
+        * Add parameter x to look at score for only one article in data
         '''
 
-        P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
-        P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
-        # P = precision
-        # R = recall
-        # F1 = F1-score
+        # Condition to look at average score for whole dataset
+        if index == None:
+            P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
+            P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
+            # P = precision
+            # R = recall
+            # F1 = F1-score
 
-        results = {}
-        results["Long precision avg"] = P_long.mean()
-        results["Long recall avg"] = R_long.mean()
-        results["Long F1-score avg"] = F1_long.mean()
-        results["Keyword precision avg"] = P_key.mean()
-        results["Keyword recall avg"] = R_key.mean()
-        results["Keyword F1-score avg"] = F1_key.mean()
+            results = {}
+            results["Long precision avg"] = ('%.4f' % (P_long.mean()))
+            results["Long recall avg"] = ('%.4f' % (R_long.mean()))
+            results["Long F1-score avg"] = ('%.4f' % (F1_long.mean()))
+            results["Keyword precision avg"] = ('%.4f' % (P_key.mean()))
+            results["Keyword recall avg"] = ('%.4f' % (R_key.mean()))
+            results["Keyword F1-score avg"] = ('%.4f' % (F1_key.mean()))
 
+        # Condition to look at one score
+        else:
+            long_summ = [long_summs[index]]
+            ref_summ = [ref_summs[index]]
+            short_summ = [short_summs[index]]
+            key_ref_summ = [key_ref_summs[index]]
+
+            P_long, R_long, F1_long = self.scorer.score(long_summ, ref_summ, verbose=True)
+            P_key, R_key, F1_key = self.scorer.score(short_summ, key_ref_summ, verbose=True)
+
+            results = {}
+            results["Long precision avg"] = ('%.4f' % (P_long))
+            results["Long recall avg"] = ('%.4f' % (R_long))
+            results["Long F1-score avg"] = ('%.4f' % (F1_long))
+            results["Keyword precision avg"] = ('%.4f' % (P_key))
+            results["Keyword recall avg"] = ('%.4f' % (R_key))
+            results["Keyword F1-score avg"] = ('%.4f' % (F1_key))
+
+        
         return results
 
 
