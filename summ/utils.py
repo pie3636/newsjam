@@ -49,7 +49,7 @@ def build_summary(top_scores, doc, sentences, max_len=280):
     """
         Builds a summary from the indices of the best sentences in the text for a given method
         Arguments:
-            `top_scores`    An array containing the best sentence or word indices for each category (clusters, topics...)
+            `top_scores`    An array containing the best sentence indices for each category (clusters, topics...)
             `doc`           The original document to summarize
             `sentences`     A list of keyword-only sentences in the original document
         Returns a tuple containing:
