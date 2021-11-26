@@ -8,3 +8,4 @@ class Summarizer():
     
     def get_summary(self, article):
         raise NotImplementedError('<Summarizer> is an abstract class. Please instantiate a child class to call this method.')
+    

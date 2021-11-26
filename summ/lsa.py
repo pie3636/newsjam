@@ -61,3 +61,14 @@ class LSASummarizer(Summarizer):
 
         # Pick the best summary using the computed scores
         return build_summary(top_scores, doc, keyword_sentences, self.max_len)
+
+    
+    def get_batch_summaries(self, article, batch_size=32):
+        """
+            Similar to `get_summary` but works on a batch of sentences at once.
+            Arguments:
+                `article`     The raw text content of the original article (without title)
+                `batch_size`  The number of sentences to process per batch
+            Returns a list containing the same values as the result of `get_summary`.
+        """
+        return get_summary(article)
