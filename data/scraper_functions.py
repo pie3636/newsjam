@@ -43,7 +43,7 @@ def actu_scraper(url):
         article_text.append(article[x].text.replace("\n"," "))
         article_text[x] = re.sub(r'Par.*\d{1,2}:\d{1,2}|Cet article vous a été.*|\(©.*?\)|<a.*?a>',"",article_text[x])
     driver.close()
-    return article_text[x]
+    return article_text[x], url
 
 def actu_autoscraper(url, url_amount=5):
     '''
