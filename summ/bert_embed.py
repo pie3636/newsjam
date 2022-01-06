@@ -2,6 +2,7 @@ from .summarizer import Summarizer
 from .utils import build_summary, get_keyword_sentences, get_top_sentences
 
 # Various matrix/neural network modules
+import numpy as np
 from transformers import AutoModel, AutoTokenizer
 import torch
 from torch.nn.utils.rnn import pad_sequence
@@ -59,7 +60,7 @@ class BertEmbeddingsSummarizer(Summarizer):
         keyword_sentences = get_keyword_sentences(doc)
 
         embeddings = [] # List of embeddings for each keyword in the text
-        word_idx_to_sent = dict # Maps word embeddings back to the original (sentence, word) indices
+        word_idx_to_sent = {} # Maps word embeddings back to the original (sentence, word) indices
 
         # Get embeddings for all keywords in a sentence
         for i, sent in enumerate(doc.sents):
@@ -73,7 +74,7 @@ class BertEmbeddingsSummarizer(Summarizer):
             sentence_embeds = self.get_sent_embeds(encoded_sent)
             
             # Add mapping for each embedding to its original word
-            for embed in torch.unbind(sentence_embeds)[0]:
+            for j, embed in enumerate(torch.unbind(sentence_embeds)[0]):
                 word_idx_to_sent[embed] == (i, j)
                 
             embeddings.append(sentence_embeds[0].detach())
