@@ -60,7 +60,7 @@ class BertEmbeddingsSummarizer(Summarizer):
         keyword_sentences = get_keyword_sentences(doc)
 
         embeddings = [] # List of embeddings for each keyword in the text
-        embed_idx_to_sent = {} # Maps word embeddings back to the original (sentence, word) indices
+        embed_idx_to_sent = [] # Maps word embeddings back to the original (sentence, word) indices
 
         # Get embeddings for all keywords in a sentence
         for i, sent in enumerate(doc.sents):
@@ -93,7 +93,7 @@ class BertEmbeddingsSummarizer(Summarizer):
             embeds = np.where(embed_labels == cluster)[0]
             # Then compute the score of each word in the cluster (distance to the centroid)
             for embed_idx in embeds:
-                clusters[embed_idx_to_sent[embed_idx]] = (cluster, 1/cosine(embed, centroids[cluster]))
+                clusters[embed_idx_to_sent[embed_idx]] = (cluster, 1/cosine(embeddings[embed_idx], centroids[cluster]))
 
         # Organize the scores by cluster
         top_scores = [[] for i in range(num_clusters)]
