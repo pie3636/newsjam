@@ -13,6 +13,7 @@ from itertools import groupby
 from selenium.webdriver.chrome.options import Options
 import re
 import sys
+import time
 
 sys.path.insert(0,'/usr/lib/chromium-browser/chromedriver') #make sure the webdriver is in the right spot
 
@@ -35,6 +36,7 @@ def actu_scraper(url):
       button.click()
     except:
       article = driver.find_elements(By.XPATH, '/html/body/div[2]/main/div/div[1]/div[1]')
+    time.sleep(2)
     article = driver.find_elements(By.XPATH, '/html/body/div[2]/main/div/div[1]/div[1]')
     article_text = []
     
