@@ -60,7 +60,7 @@ class BertEmbeddingsSummarizer(Summarizer):
         keyword_sentences = get_keyword_sentences(doc)
 
         embeddings = [] # List of embeddings for each keyword in the text
-        word_idx_to_sent = {} # Maps word embeddings back to the original (sentence, word) indices
+        embed_idx_to_sent = {} # Maps word embeddings back to the original (sentence, word) indices
 
         # Get embeddings for all keywords in a sentence
         for i, sent in enumerate(doc.sents):
@@ -74,13 +74,13 @@ class BertEmbeddingsSummarizer(Summarizer):
             sentence_embeds = self.get_sent_embeds(encoded_sent)
             
             # Add mapping for each embedding to its original word
-            for j, embed in enumerate(torch.unbind(sentence_embeds)[0]):
-                word_idx_to_sent[embed] == (i, j)
+            for j in range(sentence_embeds.shape[1]):
+                embed_idx_to_sent.append((i, j))
                 
             embeddings.append(sentence_embeds[0].detach())
 
         # Stack all embeddings into a 2D matrix
-        embeddings = np.stack(embeddings)
+        embeddings = torch.cat(embeddings)
 
         # Perform k-means clustering on the embeddings
         kmeans = KMeans(n_clusters=num_clusters).fit(embeddings)
@@ -93,8 +93,7 @@ class BertEmbeddingsSummarizer(Summarizer):
             embeds = np.where(embed_labels == cluster)[0]
             # Then compute the score of each word in the cluster (distance to the centroid)
             for embed_idx in embeds:
-                embed = embeddings[embed_idx]
-                clusters[word_idx_to_sent[embed]] = (cluster, 1/cosine(embed, centroids[cluster]))
+                clusters[embed_idx_to_sent[embed_idx]] = (cluster, 1/cosine(embed, centroids[cluster]))
 
         # Organize the scores by cluster
         top_scores = [[] for i in range(num_clusters)]
