@@ -70,7 +70,7 @@ class BertEmbeddingsSummarizer(Summarizer):
                 continue
 
             # Get embeddings of all the words in the sentence
-            encoded_sent = self.tokenizer.encode(tokenized_sent)
+            encoded_sent = self.tokenizer.encode(sent.text)
             sentence_embeds = self.get_sent_embeds(encoded_sent)
             
             # Add mapping for each embedding to its original word
