@@ -1,7 +1,7 @@
-# newsjam
+# *Newsjam*
 Jammin' the news™ <sub><sup>tabarnak</sup></sub>
 
-This repository contains the code, data, results and deliverables for the 703 Management Course project of the NLP master's degree at the IDMC, Université de Lorraine.
+This repository contains the code, data, results and deliverables for the *Newsjam* group of the 703 Management Course project of the NLP master's degree at the IDMC, Université de Lorraine.
 
 ## Repository structure:
 - `Annotation_Stats.ipynb` contains the IAA computation module.
