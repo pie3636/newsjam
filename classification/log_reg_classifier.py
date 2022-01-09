@@ -132,7 +132,7 @@ from sklearn import metrics
 # In[28]:
 
 
-data = pd.read_csv('preprocessed_data.csv')
+data = pd.read_csv('data/preprocessed_data.csv')
 
 
 # In[49]:
