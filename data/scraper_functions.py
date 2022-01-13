@@ -35,9 +35,9 @@ def actu_scraper(url):
       button = driver.find_element(By.CSS_SELECTOR, "#didomi-notice-agree-button")
       button.click()
     except:
-      article = driver.find_elements(By.XPATH, '/html/body/div[2]/main/div/div[1]/div[1]')
+      article = driver.find_elements(By.XPATH, '/html/body/div[2]/main/div/div[1]/div[1]/article/div[2]')
     time.sleep(2)
-    article = driver.find_elements(By.XPATH, '/html/body/div[2]/main/div/div[1]/div[1]')
+    article = driver.find_elements(By.XPATH, '/html/body/div[2]/main/div/div[1]/div[1]/article/div[2]')
     article_text = []
     
     #article text cleanup, automatically removes all image captions, extraneous information at the start and end of every article, etc.
