@@ -1,9 +1,5 @@
 import re
 
-test1 = 'This is a test.This is a test.This is a test.This is a test.This is a test.This is a test.'
-test2 = 'Yesterday I went to the store and now I am going home. Yesterday I went to the store and now I am going home. Yesterday I went to the store and now I am going home.'
-test3 = 'This iS a Test. This iS a Test. This iS a Test. This iS a Test. This iS a Test.'
-
 def rep_search(text):
 
     find = re.findall(r'(\b[A-Z][{a-z}\s\.]+)(\1)+', text)
@@ -28,6 +24,3 @@ def rep_search(text):
             new_text = text[0:len(find3[0][0])]
             return print(new_text)
             break
-
-
-rep_search(test2)
