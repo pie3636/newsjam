@@ -1,5 +1,5 @@
 # *Newsjam*
-Jammin' the news™ <sub><sup>tabarnak</sup></sub>
+Jammin' the news™
 
 This repository contains the code, data, results and deliverables for the *Newsjam* group of the 703 Project Management course of the NLP master's degree at the IDMC, Université de Lorraine.
 
