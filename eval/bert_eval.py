@@ -13,7 +13,14 @@ class BERT_Eval(Eval):
         self.scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
         super().__init__()
 
-    def split_summs(self, gen_summs, ref_summs):
+    def split_summs(self, gen_summs, ref_summs, gen_keys=False):
+
+        '''
+        gen_summs = generated summaries list (containing pairs of long and keyword summaries
+        ref_summs = reference summaries list (only containing long reference summaries)
+        gen_keys = whether we want to create the list of keyword generated summaries and
+                   generate the keyword reference summaries or not
+        '''
 
         '''
         Function to separate long and keyword summaries for generated and reference data
@@ -25,26 +32,37 @@ class BERT_Eval(Eval):
 
         # tried just unpacking the two variables from gen_summs but it wasn't working for me, I have no idea why
         # so I made a 'for loop' to do the same thing
-        long_summs = []
-        short_summs = []
-        for x in range(len(gen_summs)):
-            long_summs.append(gen_summs[x][0])
-            short_summs.append(gen_summs[x][1])
 
-        individual_summs = []
-        cur_summ = []
-        for summ in ref_summs:
-            summ = self.nlp(summ)
-            for sent in summ.sents:
-                for token in sent:
-                    if not token.text.lower() in STOP_WORDS and not token.is_punct:
-                        cur_summ.append(token.lemma_)
-            individual_summs.append(cur_summ)
+        # If we want to generate keyword summaries
+        if gen_keys == True:
+            long_summs = []
+            short_summs = []
+            for x in range(len(gen_summs)):
+                long_summs.append(gen_summs[x][0])
+                short_summs.append(gen_summs[x][1])
+
+            individual_summs = []
             cur_summ = []
+            for summ in ref_summs:
+                summ = self.nlp(summ)
+                for sent in summ.sents:
+                    for token in sent:
+                        if not token.text.lower() in STOP_WORDS and not token.is_punct:
+                            cur_summ.append(token.lemma_)
+                individual_summs.append(cur_summ)
+                cur_summ = []
 
-        key_ref_summs = [' '.join(sent) for sent in individual_summs]
+            key_ref_summs = [' '.join(sent) for sent in individual_summs]
 
-        return long_summs, short_summs, ref_summs, key_ref_summs
+            return long_summs, short_summs, ref_summs, key_ref_summs
+
+        # If we do not want to generate keyword summaries
+        else:
+            long_summs = []
+            for x in range(len(gen_summs)):
+                long_summs.append(gen_summs[x][0])
+
+            return long_summs, ref_summs
 
 
     def bert_score(self, long_summs, ref_summs, short_summs=None, key_ref_summs=None, index=None):
