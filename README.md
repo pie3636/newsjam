@@ -6,7 +6,7 @@ This repository contains the code, data, results and deliverables for the *Newsj
 ## Repository structure:
 - `Annotation_Stats.ipynb` contains the IAA computation module.
 - `Pipeline.ipynb` contains the full bot pipeline implementation, from scraping to posting. It requires a Twitter API key to run, which is not included in this repository for security reasons.
-- `Text_Post-processing.py` contains the text post-processing function.
+- `Text_Post-process.py` contains the text post-processing function.
 - `main.ipynb` contains the main summarization module. It can instantiate specific summarization and evaluation submodules, as well as save generated summaries to an output file.
 - `classif\` contains data, scripts and notebooks related to the classification subtask:
   - `\Annotation Guidelines.docx` contains the annotation guidelines
