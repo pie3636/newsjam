@@ -47,46 +47,57 @@ class BERT_Eval(Eval):
         return long_summs, short_summs, ref_summs, key_ref_summs
 
 
-    def bert_score(self, long_summs, short_summs, ref_summs, key_ref_summs, index=None):
+    def bert_score(self, long_summs, ref_summs, short_summs=None, key_ref_summs=None, index=None):
 
         '''
         Function to compute the bert_scores for all the data
         * Add parameter x to look at score for only one article in data
         '''
 
-        # Condition to look at average score for whole dataset
-        if index == None:
+        # Condition if we do not want to look at the keyword summaries (short_summs & key_ref_summs)
+        if short_summs != None and key_ref_summs != None:
+            # Condition to look at average score for whole dataset
+            if index == None:
+                P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
+                P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
+                # P = precision
+                # R = recall
+                # F1 = F1-score
+
+                results = {}
+                results["Long precision avg"] = ('%.4f' % (P_long.mean()))
+                results["Long recall avg"] = ('%.4f' % (R_long.mean()))
+                results["Long F1-score avg"] = ('%.4f' % (F1_long.mean()))
+                results["Keyword precision avg"] = ('%.4f' % (P_key.mean()))
+                results["Keyword recall avg"] = ('%.4f' % (R_key.mean()))
+                results["Keyword F1-score avg"] = ('%.4f' % (F1_key.mean()))
+
+            # Condition to look at one score
+            else:
+                long_summ = [long_summs[index]]
+                ref_summ = [ref_summs[index]]
+                short_summ = [short_summs[index]]
+                key_ref_summ = [key_ref_summs[index]]
+
+                P_long, R_long, F1_long = self.scorer.score(long_summ, ref_summ, verbose=True)
+                P_key, R_key, F1_key = self.scorer.score(short_summ, key_ref_summ, verbose=True)
+
+                results = {}
+                results["Long precision avg"] = ('%.4f' % (P_long))
+                results["Long recall avg"] = ('%.4f' % (R_long))
+                results["Long F1-score avg"] = ('%.4f' % (F1_long))
+                results["Keyword precision avg"] = ('%.4f' % (P_key))
+                results["Keyword recall avg"] = ('%.4f' % (R_key))
+                results["Keyword F1-score avg"] = ('%.4f' % (F1_key))
+
+        # Condition if we only want to evaluate the long/non-tokenized versions of summaries
+        else:
             P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
-            P_key, R_key, F1_key = self.scorer.score(short_summs, key_ref_summs, verbose=True)
-            # P = precision
-            # R = recall
-            # F1 = F1-score
 
             results = {}
             results["Long precision avg"] = ('%.4f' % (P_long.mean()))
             results["Long recall avg"] = ('%.4f' % (R_long.mean()))
             results["Long F1-score avg"] = ('%.4f' % (F1_long.mean()))
-            results["Keyword precision avg"] = ('%.4f' % (P_key.mean()))
-            results["Keyword recall avg"] = ('%.4f' % (R_key.mean()))
-            results["Keyword F1-score avg"] = ('%.4f' % (F1_key.mean()))
-
-        # Condition to look at one score
-        else:
-            long_summ = [long_summs[index]]
-            ref_summ = [ref_summs[index]]
-            short_summ = [short_summs[index]]
-            key_ref_summ = [key_ref_summs[index]]
-
-            P_long, R_long, F1_long = self.scorer.score(long_summ, ref_summ, verbose=True)
-            P_key, R_key, F1_key = self.scorer.score(short_summ, key_ref_summ, verbose=True)
-
-            results = {}
-            results["Long precision avg"] = ('%.4f' % (P_long))
-            results["Long recall avg"] = ('%.4f' % (R_long))
-            results["Long F1-score avg"] = ('%.4f' % (F1_long))
-            results["Keyword precision avg"] = ('%.4f' % (P_key))
-            results["Keyword recall avg"] = ('%.4f' % (R_key))
-            results["Keyword F1-score avg"] = ('%.4f' % (F1_key))
 
         
         return results
