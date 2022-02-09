@@ -5,7 +5,7 @@ def rep_search(text):
      
     for x in range(len(text)):
         
-        exp = rf'((\(*[A-Z]\S+\b\)*)(\s+\(*\b\S+\b\)*){{{x}}}(\s*\(*\b\S+\)*[\.]?))(\1)+'
+        exp = rf'((\(*[A-Z]\S+\b\)*)(\s+\(*\b\S+\b\)*){{{x}}}(\s+\(*\b\S+\)*[\.]?))(\1)+'
         search = re.search(exp, text)
         find = re.findall(exp, text)
         
