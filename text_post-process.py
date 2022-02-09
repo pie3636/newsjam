@@ -20,13 +20,11 @@ def rep_search(text):
             if start == 0:
                 # If the repeated phrase is at the beginning of the string
                 new_text = text[start:middle] + text[end:]
-                return new_text
-                break
+                return rep_search(new_text)
             
             else:
                 new_text = text[0:middle] + text[end:len(text)]
-                return new_text
-                break
+                return rep_search(new_text)
             
     for x in range(len(text)):
         
@@ -44,16 +42,15 @@ def rep_search(text):
            
             if start == 0:
                # If the repeated phrase is at the beginning of the string
-               new_text = text[start:middle] + ' ' +text[end:]
-               return new_text
-               break
+               new_text = text[start:middle] + ' ' + text[end:]
+               return rep_search(new_text)
     
             else:
-               new_text = text[0:middle] + ' ' +text[end:len(text)]
-               return new_text 
-               break
+               new_text = text[0:middle] + ' ' + text[end:len(text)]
+               return rep_search(new_text) 
            
     if not search and not search2:
     # If there are no repetitions in the string
         return text
            
+    
