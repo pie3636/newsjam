@@ -5,7 +5,7 @@ def rep_search(text):
      
     for x in range(len(text)):
         
-        exp = rf'((\(*[A-Z]\S+\b\)*)(\s+\(*\b\S+\b\)*){{{x}}}(\s+\(*\b\S+\)*[\.]?))(\1)+'
+        exp = rf'((\(*[A-Z]\S+\b\)*)(\s+\(*\b\S+\b\)*){{{x}}}(\s*\(*\b\S+\)*[\.]?))(\1)+'
         search = re.search(exp, text)
         find = re.findall(exp, text)
         
@@ -28,7 +28,7 @@ def rep_search(text):
             
     for x in range(len(text)):
         
-        exp2 = rf'(\(*\b\S+\b\)*(\s*\(*\b\S+\b\)*[\.]?){{{x}}})\s*(\1(\s*|\.))+'
+        exp2 = rf'(\(*\b\S+\b\)*(\s+\(*\b\S+\b\)*[\.]?){{{x}}})\s*(\1(\s*|\.))+'
         search2 = re.search(exp2, text)
         find2 = re.findall(exp2, text)
         
@@ -52,4 +52,5 @@ def rep_search(text):
     if not search and not search2:
     # If there are no repetitions in the string
         return text
-           
+               
+    
