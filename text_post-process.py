@@ -7,7 +7,7 @@ def rep_search(text):
     Function to catch repeating phrases
     '''
      
-    for x in range(len(text)):
+    for x in range(len(text.split(' '))):
         
         exp = rf'((\(*[€«]*\s*[A-Z]\S+\b\s*[€\.]*\s*[»]?\)*)(\s+\(*[€«]*\s*\b\S+\b\s*[€\.]*\s*[»]?\)*){{{x}}}(\s+\(*[€«]*\s*\b\S+\s*[€\.]*\s*[»]?\)*[\.]?))(\1)+'
         search = re.search(exp, text, re.UNICODE)
@@ -30,7 +30,7 @@ def rep_search(text):
                 new_text = text[0:middle] + text[end:len(text)]
                 return rep_search(new_text)
             
-    for x in range(len(text)):
+    for x in range(len(text.split(' '))):
         
         exp2 = rf'(\(*[€«]*\s*\b\S+\b\s*[€\.]*\s*[»]?\)*(\s+\(*[€«]*\s*\b\S+\b\s*[€\.]*\s*[»]?\)*[\.]?){{{x}}})\s*(\1(\s*|\.))+'
         search2 = re.search(exp2, text, re.UNICODE)
