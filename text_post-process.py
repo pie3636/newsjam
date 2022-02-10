@@ -2,12 +2,15 @@ import re
 
 
 def rep_search(text):
+    ''''
+    Function to catch repeating phrases
+    '''
      
     for x in range(len(text)):
         
-        exp = rf'((\(*[A-Z]\S+\b\)*)(\s+\(*\b\S+\b\)*){{{x}}}(\s+\(*\b\S+\)*[\.]?))(\1)+'
-        search = re.search(exp, text)
-        find = re.findall(exp, text)
+        exp = rf'((\(*[€«»]*\s*[A-Z]\S+\b\s*[€]*\s*[«»]*\)*)(\s+\(*[€«»]*\s*\b\S+\b\s*[€]*\s*[«»]*\)*){{{x}}}(\s+\(*[€«»]*\s*\b\S+\s*[€]*\s*[«»]*\)*[\.]?))(\1)+'
+        search = re.search(exp, text, re.UNICODE)
+        find = re.findall(exp, text, re.UNICODE)
         
         if search:
             # starting index of the phrase repetitions
@@ -28,9 +31,9 @@ def rep_search(text):
             
     for x in range(len(text)):
         
-        exp2 = rf'(\(*\b\S+\b\)*(\s+\(*\b\S+\b\)*[\.]?){{{x}}})\s*(\1(\s*|\.))+'
-        search2 = re.search(exp2, text)
-        find2 = re.findall(exp2, text)
+        exp2 = rf'(\(*[€«»]*\s*\b\S+\b\s*[€]*\s*[«»]*\)*(\s+\(*[€«»]*\s*\b\S+\b\s*[€]*\s*[«»]*\)*[\.]?){{{x}}})\s*(\1(\s*|\.))+'
+        search2 = re.search(exp2, text, re.UNICODE)
+        find2 = re.findall(exp2, text, re.UNICODE)
         
         if search2:
             # starting index of the phrase repetitions
@@ -52,5 +55,4 @@ def rep_search(text):
     if not search and not search2:
     # If there are no repetitions in the string
         return text
-               
-    
+   
