@@ -72,7 +72,7 @@ class BERT_Eval(Eval):
         * Add parameter x to look at score for only one article in data
         '''
 
-        # Condition if we do not want to look at the keyword summaries (short_summs & key_ref_summs)
+        # Condition if we do want to look at the keyword summaries (short_summs & key_ref_summs)
         if short_summs != None and key_ref_summs != None:
             # Condition to look at average score for whole dataset
             if index == None:
@@ -110,14 +110,27 @@ class BERT_Eval(Eval):
 
         # Condition if we only want to evaluate the long/non-tokenized versions of summaries
         else:
-            P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
+            # Condition to look at average long scores for whole dataset
+            if index == None:
+                P_long, R_long, F1_long = self.scorer.score(long_summs, ref_summs, verbose=True)
 
-            results = {}
-            results["Long precision avg"] = ('%.4f' % (P_long.mean()))
-            results["Long recall avg"] = ('%.4f' % (R_long.mean()))
-            results["Long F1-score avg"] = ('%.4f' % (F1_long.mean()))
+                results = {}
+                results["Long precision avg"] = ('%.4f' % (P_long.mean()))
+                results["Long recall avg"] = ('%.4f' % (R_long.mean()))
+                results["Long F1-score avg"] = ('%.4f' % (F1_long.mean()))
 
-        
+            # Condition to look at one long score
+            else:
+                long_summ = [long_summs[index]]
+                ref_summ = [ref_summs[index]]
+
+                P_long, R_long, F1_long = self.scorer.score(long_summ, ref_summ, verbose=True)
+
+                results = {}
+                results["Long precision avg"] = ('%.4f' % (P_long))
+                results["Long recall avg"] = ('%.4f' % (R_long))
+                results["Long F1-score avg"] = ('%.4f' % (F1_long))
+
         return results
 
 
