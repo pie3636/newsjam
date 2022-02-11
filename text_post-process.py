@@ -1,6 +1,7 @@
 import re
 
 
+
 def rep_search(text):
     
     ''''
@@ -24,8 +25,6 @@ def rep_search(text):
             new_text = text[0:middle] + text[end:]
             return rep_search(new_text)
             
-            
-    for x in range(len(text.split(' '))):
         
         exp2 = rf'(\(*[€«]*\s*\b\S+\b\s*[€\.\,\!\?\&\s]*[»]?\)*([\s\,\:]+\(*[€«]*\s*\b\S+\b\s*[€\.\,\!\?\&\s]*[»]?\)*){{{x}}}[\.\?\!]?)\s*(\1)+'
         search2 = re.search(exp2, text, re.UNICODE)
