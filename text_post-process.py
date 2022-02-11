@@ -21,14 +21,9 @@ def rep_search(text):
             # ending index of the phrase repetitions
             end = search.span()[1]
             
-            if start == 0:
-                # If the repeated phrase is at the beginning of the string
-                new_text = text[start:middle] + text[end:]
-                return rep_search(new_text)
+            new_text = text[0:middle] + text[end:]
+            return rep_search(new_text)
             
-            else:
-                new_text = text[0:middle] + text[end:len(text)]
-                return rep_search(new_text)
             
     for x in range(len(text.split(' '))):
         
@@ -44,20 +39,14 @@ def rep_search(text):
             # ending index of the phrase repetitions
             end = search2.span()[1]
            
-            if start == 0:
-               # If the repeated phrase is at the beginning of the string
-               new_text = text[start:middle] + ' ' + text[end:]
-               return rep_search(new_text)
+            new_text = text[0:middle] + text[end:]
+            return rep_search(new_text)
     
-            else:
-               new_text = text[0:middle] + ' ' + text[end:len(text)]
-               return rep_search(new_text) 
-           
     if not search and not search2:
         # If there are no repetitions in the string
         return text
-    
-    
+ 
+
 
 def blocked_phrase(text):
     
