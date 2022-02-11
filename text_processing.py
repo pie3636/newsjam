@@ -17,7 +17,7 @@ class Post:
          
         for x in range(len(text.split(' '))):
             
-            exp = rf'((\(*[€«]*\s*[A-Z]\S+\b\s*[€\.\,\&\s]*[»]?\)*)([\s\,\:]+\(*[€«]*\s*\b\S+\b\s*[€\.\,\&\s]*[»]?\)*){{{x}}}([\s\,\:]+\(*[€«]*\s*\b\S+\s*[€\.\,\&\s]*[»]?\)*[\.\?\!]?))\s*(\1)+'
+            exp = rf'((\(*[€«]*\s*[A-Z]\S+\b\s*[€\.\,\!\?\&\s]*[»]?\)*)([\s\,\:]+\(*[€«]*\s*\b\S+\b\s*[€\.\,\!\?\&\s]*[»]?\)*){{{x}}}([\s\,\:]+\(*[€«]*\s*\b\S+\s*[€\.\,\!\?\&\s]*[»]?\)*[\.\?\!]?))\s*(\1)+'
             search = re.search(exp, text, re.UNICODE)
             find = re.findall(exp, text, re.UNICODE)
             
@@ -32,26 +32,11 @@ class Post:
                 new_text = text[0:middle] + text[end:]
                 return self.rep_search(new_text)
                 
-            
-            exp2 = rf'(\(*[€«]*\s*\b\S+\b\s*[€\.\,\!\?\&\s]*[»]?\)*([\s\,\:]+\(*[€«]*\s*\b\S+\b\s*[€\.\,\!\?\&\s]*[»]?\)*){{{x}}}[\.\?\!]?)\s*(\1)+'
-            search2 = re.search(exp2, text, re.UNICODE)
-            find2 = re.findall(exp2, text, re.UNICODE)
-            
-            if search2:
-                # starting index of the phrase repetitions
-                start = search2.span()[0]
-                # area containing single instance of phrase that is repeated
-                middle = start + len(find2[0][0])
-                # ending index of the phrase repetitions
-                end = search2.span()[1]
-               
-                new_text = text[0:middle] + text[end:]
-                return self.rep_search(new_text)
-        
-        if not search and not search2:
+        if not search:
             # If there are no repetitions in the string
             return text
  
+
 
 class Pre:
     '''
