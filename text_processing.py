@@ -4,6 +4,7 @@ import re
 class Post:
     '''
     Class for text post-processing functions
+    - to be run after the summary is generated
     '''
     
     def __init__(self):
@@ -12,7 +13,7 @@ class Post:
     def rep_search(self, text):
         
         '''
-        Function to catch repeating phrases
+        Function to catch and get rid of repeating phrases
         '''
          
         for x in range(len(text.split(' '))):
@@ -41,15 +42,16 @@ class Post:
 class Pre:
     '''
     Class for text pre-processing functions
+    - to be run on articles before summary is generated
     '''
     
     def __init__(self):
         pass
     
-    def fr_blocked_phrase(self, text):
+    def fr_phrases(self, text):
         
         '''
-        Function to get rid of unnecessary phrases found in some of our French articles
+        Function to get rid of unnecessary phrases found in some of our French corpus articles
         '''
         
         exp1 = 'Ce contenu est bloqué car vous n\'avez pas accepté les traceurs. '
@@ -63,8 +65,28 @@ class Pre:
         
             if search:
                 new_text = re.sub(exp, '', text)
-                return self.blocked_phrase(new_text)
+                return self.fr_phrase(new_text)
                 
+        if not search:
+            return text
+        
+        
+    def en_phrases(self, text):
+        '''
+        Function to get rid of unnecessary phrases found in some of our English corpus articles
+        '''
+        
+        exp1 = 'Sign up to the daily Business Today email or follow Guardian Business on Twitter at @BusinessDesk '
+        
+        exp_list = [exp1]
+        
+        for exp in exp_list:
+            search = re.search(exp, text)
+            
+            if search:
+                new_text = re.sub(exp, '', text)
+                return self.en_phrases(new_text)
+            
         if not search:
             return text
   
