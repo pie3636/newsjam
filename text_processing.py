@@ -65,7 +65,7 @@ class Pre:
         
             if search:
                 new_text = re.sub(exp, '', text)
-                return self.fr_phrase(new_text)
+                return self.fr_phrases(new_text)
                 
         if not search:
             return text
