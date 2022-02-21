@@ -77,8 +77,9 @@ class Pre:
         '''
         
         exp1 = 'Sign up to the daily Business Today email or follow Guardian Business on Twitter at @BusinessDesk '
+        exp2 = 'Sign up to receive the top stories from Guardian Australia every morning '
         
-        exp_list = [exp1]
+        exp_list = [exp1, exp2]
         
         for exp in exp_list:
             search = re.search(exp, text)
