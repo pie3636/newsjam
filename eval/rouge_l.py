@@ -1,4 +1,5 @@
-from spacy.lang.fr.stop_words import STOP_WORDS
+from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
+from spacy.lang.en.stop_words import STOP_WORDS as en_stop
 
 # Evaluation
 from rouge_score import rouge_scorer
@@ -11,7 +12,7 @@ class RougeLEval(Eval):
 		super().__init__()
 
 
-	def evaluate_one(self, ref_summ, gen_summ):
+	def evaluate_one(self, ref_summ, gen_summ, lang='fr'):
 		"""
 			Computes the ROUGE-L score corresponding to the evaluation of a generated summary
 			(in two versions: full text and keyword-only version) with a reference one
@@ -23,17 +24,23 @@ class RougeLEval(Eval):
 				- The scores of the keyword-only summary
 		"""
 
+		if lang =='fr':
+			stop_words = fr_stop
+			summ = self.nlp(ref_summ)
+		elif lang == 'en':
+			stop_words = en_stop
+			summ = self.nlp_en(ref_summ)
+
 		# Process the reference summary (segment it)
 		# Also make a copy that is stemmed and has no stopwords to compare it with the
 		# keyword-only generated summary
 		long_summ, short_summ = gen_summ
 
-		summ = self.nlp(ref_summ)
 		summ_sentences = []
 		summ_cur_sentence = []
 		for sent in summ.sents:
 			for token in sent:
-				if not token.text.lower() in STOP_WORDS and not token.is_punct:
+				if not token.text.lower() in stop_words and not token.is_punct:
 					summ_cur_sentence.append(token.lemma_)
 			summ_sentences.append(summ_cur_sentence)
 			summ_cur_sentence = []
