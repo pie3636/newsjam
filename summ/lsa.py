@@ -27,10 +27,10 @@ class LSASummarizer(Summarizer):
         """
         if lang == 'fr':
             doc = self.nlp(article)
+            keyword_sentences = get_keyword_sentences(doc)
         elif lang == 'en':
             doc = self.nlp_en(article)
-
-        keyword_sentences = get_keyword_sentences(doc)
+            keyword_sentences = get_keyword_sentences(doc, lang='en')
 
         # Convert sentences to bags of words
         dictionary = corpora.Dictionary(keyword_sentences)
