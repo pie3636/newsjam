@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Feb 25 17:04:38 2022
-
-@author: josephkeenan
-"""
-
 from transformers import AutoTokenizer, AutoModel, DataCollatorWithPadding
 import pandas as pd
 
@@ -57,8 +49,3 @@ trainer = Trainer(model=model,
 
 # Train the model on the new dataset
 trainer.train()
-
-
-
-
-
