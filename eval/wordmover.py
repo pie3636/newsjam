@@ -8,13 +8,20 @@ from tqdm import tqdm
 from .eval import Eval
 
 class WordMoverEval(Eval):
-    def __init__(self, in_file):
-        if in_file.endswith('.bin'):
-            self.model = fasttext.load_model(in_file)
-            # TODO Fine-tune model
-            # self.model.train(sentences)
+    def __init__(self, in_file=None, model=None, posttraining={}):
+        if model is not None:
+            self.model = model
+        elif in_file is not None:
+            if in_file.endswith('.bin'):
+                self.model = fasttext.load_model(in_file)
+            else:
+                self.model = keyedvectors.load_word2vec_format(in_file)
         else:
-            self.model = keyedvectors.load_word2vec_format(in_file)
+            raise ValueError('A fasttext model or input file must be specified.')
+        if len(posttraining):
+            sents = posttraining['sents']
+            self.model.build_vocab(sents, update=True)
+            self.model.train(sentences=sents, total_examples=len(sent), epochs=posttraining['epochs'])
         super().__init__()
 
 
