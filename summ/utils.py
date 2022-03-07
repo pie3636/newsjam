@@ -1,4 +1,5 @@
-from spacy.lang.fr.stop_words import STOP_WORDS
+from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
+from spacy.lang.en.stop_words import STOP_WORDS as en_stop
 
 def get_top_sentences(top_scores, article_size):
     """
@@ -26,19 +27,27 @@ def get_top_sentences(top_scores, article_size):
     return top_sentences
 
 
-def get_keyword_sentences(doc):
+def get_keyword_sentences(doc, lang='fr'):
     """
         Returns a list of keyword-only sentences for a given document
         Arguments:
             `doc`   The original document
+            `lang`  language of the document
+                - default language is 'fr' (French) to instantiate French stop_words
+                - other current option is 'en' (English) to instantiate English stop_words
         Returns:
             A list of the sentences in `doc`, converted into a list of keywords
     """
+    if lang == 'fr':
+        stop_words = fr_stop
+    elif lang == 'en':
+        stop_words = en_stop
+
     sentences = []
     cur_sentence = []
     for sent in doc.sents:
         for token in sent:
-            if not token.text.lower() in STOP_WORDS and not token.is_punct:
+            if not token.text.lower() in stop_words and not token.is_punct:
                 cur_sentence.append(token.lemma_)
         sentences.append(cur_sentence)
         cur_sentence = []

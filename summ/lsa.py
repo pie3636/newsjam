@@ -13,18 +13,24 @@ class LSASummarizer(Summarizer):
         super().__init__(max_len)
 
 
-    def get_summary(self, article):
+    def get_summary(self, article, lang='fr'):
         """
             Computes the optimal summary of an article using Latent Semantic Analysis
             Arguments:
                 `article` The raw text content of the original article (without title)
+                `lang`  language of the document
+                - default language is 'fr' (French) to instantiate French stop_words
+                - other current option is 'en' (English) to instantiate English stop_words
             Returns a tuple containing:
                 - The generated summary in text form
                 - A keywords-only version of the generated summary
         """
-
-        doc = self.nlp(article)
-        keyword_sentences = get_keyword_sentences(doc)
+        if lang == 'fr':
+            doc = self.nlp(article)
+            keyword_sentences = get_keyword_sentences(doc)
+        elif lang == 'en':
+            doc = self.nlp_en(article)
+            keyword_sentences = get_keyword_sentences(doc, lang='en')
 
         # Convert sentences to bags of words
         dictionary = corpora.Dictionary(keyword_sentences)
@@ -71,4 +77,4 @@ class LSASummarizer(Summarizer):
                 `batch_size`  The number of sentences to process per batch
             Returns a list containing the same values as the result of `get_summary`.
         """
-        return get_summary(article)
+        return self.get_summary(article)

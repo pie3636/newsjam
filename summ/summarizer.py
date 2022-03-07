@@ -4,6 +4,7 @@ import spacy
 class Summarizer():
     def __init__(self, max_len=280):
         self.nlp = spacy.load("fr_core_news_sm")
+        self.nlp_en = spacy.load('en_core_web_sm')
         self.max_len = max_len
     
     def get_summary(self, article):

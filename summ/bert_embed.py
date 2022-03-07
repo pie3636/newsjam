@@ -40,12 +40,15 @@ class BertEmbeddingsSummarizer(Summarizer):
         elif 'flaubert' in self.model_name: # https://huggingface.co/flaubert/flaubert_large_cased
             token_ids = torch.tensor([encoded_sentence])
             embeddings = self.model(token_ids)[0]
+        elif 'roberta' in self.model_name: # https://huggingface.co/roberta-base
+            token_ids = torch.tensor([encoded_sentence])
+            embeddings = self.model(token_ids)[0]
         else:
             raise ValueError('Unsupported model <{0}>'.format(self.model_name))
         return embeddings
 
 
-    def get_summary(self, article, num_clusters=5):
+    def get_summary(self, article, num_clusters=5, lang='fr'):
         """
             Computes the optimal summary of an article using Bert embeddings and k-means clustering
             Arguments:
@@ -55,9 +58,12 @@ class BertEmbeddingsSummarizer(Summarizer):
                 - The generated summary in text form
                 - A keywords-only version of the generated summary
         """
-
-        doc = self.nlp(article)
-        keyword_sentences = get_keyword_sentences(doc)
+        if lang == 'fr':
+            doc = self.nlp(article)
+            keyword_sentences = get_keyword_sentences(doc)
+        elif lang == 'en':
+            doc = self.nlp_en(article)
+            keyword_sentences = get_keyword_sentences(doc, lang= 'en')
 
         embeddings = [] # List of embeddings for each keyword in the text
         embed_idx_to_sent = [] # Maps word embeddings back to the original (sentence, word) indices
@@ -103,7 +109,7 @@ class BertEmbeddingsSummarizer(Summarizer):
         # Pick the best summary using the computed scores
         return build_summary(top_scores, doc, keyword_sentences, self.max_len)
 
-    def get_batch_summaries(self, article, num_clusters=5):
+    def get_batch_summaries(self, article, num_clusters=5, lang='fr'):
         """
             Similar to `get_summary` but works on a batch of sentences at once.
             Arguments:
@@ -111,10 +117,13 @@ class BertEmbeddingsSummarizer(Summarizer):
                 `batch_size`  The number of sentences to process per batch
             Returns a list containing the same values as the result of `get_summary`.
         """
-
-        doc = self.nlp(article)
-        keyword_sentences = get_keyword_sentences(doc)
-
+        if lang == 'fr':
+            doc = self.nlp(article)
+            keyword_sentences = get_keyword_sentences(doc)
+        elif lang == 'en':
+            doc = self.nlp_en(article)
+            keyword_sentences = get_keyword_sentences(doc, lang='en')
+            
         embeddings = [] # List of embeddings for each keyword in the text
         word_idx_to_sent = [] # Maps indices in embeddings back to the original (sentence, word) indices
 
