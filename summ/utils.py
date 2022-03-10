@@ -1,5 +1,6 @@
 from spacy.lang.fr.stop_words import STOP_WORDS as fr_stop
 from spacy.lang.en.stop_words import STOP_WORDS as en_stop
+from .text_processing import Post
 
 def get_top_sentences(top_scores, article_size):
     """
@@ -74,29 +75,75 @@ def build_summary(top_scores, doc, sentences, max_len=280):
     all_sents = list(doc.sents)
     top_sentences = get_top_sentences(top_scores, len(all_sents) + 1)
 
+    # Generate optimal summary
+    sents_to_add, summary_size = _build_summary(top_sentences, all_sents, max_len)
+    summary, keyword_summary = _build_summary_2(sentences, all_sents, sents_to_add)
+    
+    # Trim summary
+    post = Post()
+    summary = post.rep_search(summary)
+    keyword_summary = post.rep_search(summary)
+    
+    # Attempt adding new sentences
+    if len(summary) < summary_size:
+        sents_to_add, summary_size = _build_summary(top_sentences, all_sents, max_len, sents_to_add)
+        summary, keyword_summary = _build_summary_2(sentences, all_sents, sents_to_add)
+        summary = post.rep_search(summary)
+        keyword_summary = post.rep_search(summary)
+        
+    # Remove the final space/newline
+    if summary:
+        summary = summary.strip()
+        keyword_summary = keyword_summary.strip()
+    return summary, keyword_summary
+
+
+def _build_summary(top_sentences, all_sents, max_len, sents_to_add=None):
+    """
+        Auxillary function for summary building. Attempts to fit as many sentences
+        into a summary as possible.
+        Specifically, tries to add each sentence to the summary, starting
+        from the best one         and making sure to not go over a tweet's length
+        Arguments:
+            `top_sentences` A list of sentence indices sorted in decreasing order of importance
+            `all_sents`     All sentences from the original document
+            `max_len`       The maximum length of the summary in characters
+            `sents_to_add`  A list of sentence indices already added to the summary
+        Returns a tuple containing:
+            - The list of sentence indices to be contained in the summary
+            - The length of the generated summary in characters
+    """
     # Try to add each sentence to the summary, starting from the best one
     # and making sure to not go over a tweet's length
-    sents_to_add = []
+    if sents_to_add is None:
+        sents_to_add = set()
+        
     summary_size = 0
     for i in top_sentences:
-        full_sent = all_sents[i].text
-        new_size = summary_size + len(full_sent)
-        if summary_size + new_size <= max_len:
-            sents_to_add.append(i)
-            summary_size += len(full_sent) + 1 # +1 because of the space/newline between sentences
+        if i not in sents_to_add:
+            full_sent = all_sents[i].text
+            new_size = summary_size + len(full_sent)
+            if summary_size + new_size <= max_len:
+                sents_to_add.add(i)
+                summary_size += len(full_sent) + 1 # +1 because of the space/newline between sentences
+    return sents_to_add, summary_size
 
-    # Now that we have the optimal list of sentences,
-    # build the actual summary as well as the keyword-only version
+def _build_summary_2(sentences, all_sents, sents_to_add):
+    """
+        Auxillary function for summary building. Builds the full and keyword-only summary.
+        Arguments:
+            `sents_to_add`  A list of sentence indices to add to the summary
+            `all_sents`     All sentences from the original document
+            `sentences`     A list of keyword-only sentences in the original document
+        Returns a tuple containing:
+            - The generated summary in text form
+            - A keywords-only version of the generated summary
+    """
     summary = ''
     keyword_summary = ''
-    for sent_idx in sents_to_add:
+    for sent_idx in sorted(sents_to_add):
         keyword_sent = ' '.join(word for word in sentences[sent_idx])
         full_sent = all_sents[sent_idx].text
         keyword_summary += keyword_sent + '\n'
         summary += full_sent + '\n'
-
-    # Remove the final space/newline
-    if summary:
-        summary = summary[:-1]
-        keyword_summary = keyword_summary[:-1]
     return summary, keyword_summary

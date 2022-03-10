@@ -2,6 +2,10 @@ import os
 import shutil
 import subprocess
 
+from tqdm import tqdm
+
+subprocess.run(['python3', '-m', 'pip', 'install', 'tqdm'])
+
 def get_articles(in_dataset, test=True): # Load reference dataset
     testset = None
     if in_dataset == 'MLSUM FR':
@@ -15,6 +19,8 @@ def get_articles(in_dataset, test=True): # Load reference dataset
         testset = dataset['test']
         trainset = dataset['train']
     elif in_dataset == 'ER/Actu':
+        from newsjam.summ.text_processing import Pre
+        pre = Pre()
         import json
         trainset = []
         with open('data/actu_articles.json', encoding='utf-8') as f:
@@ -22,18 +28,25 @@ def get_articles(in_dataset, test=True): # Load reference dataset
         import csv
         with open('data/lest_rep_updated_tagged.csv', newline='') as csvfile:
             reader = csv.DictReader(csvfile)
-            next(reader)
             for row in reader:
                 testset.append(row)
+        print('Pre-processing corpus...')
+        for article in tqdm(testset):
+            article['text'] = pre.fr_phrases(article['text'])
     elif in_dataset == 'Guardian':
+        from newsjam.summ.text_processing import Pre
+        pre = Pre()
         import csv
         trainset = []
         testset = []
         with open('data/Guardian Data Final.csv', newline='') as csvfile:
             reader = csv.DictReader(csvfile)    
-            next(reader)
             for row in reader:
-                testset.append(row)
+                if 'text' in row.keys():
+                    testset.append(row)
+        print('Pre-processing corpus...')
+        for article in tqdm(testset):
+            article['text'] = pre.en_phrases(article['text'])
     
     # Prepare keyword sentences
     import spacy
@@ -284,7 +297,6 @@ if exp_type == 's' or timing:
         from timeit import default_timer as timer
         start = timer()
     
-    from tqdm import tqdm
     for article in tqdm(articles):
         if 'text' in article:
             gen_summs.append(summ.get_summary(article['text']))
