@@ -1,8 +1,21 @@
+import argparse
 import os
 import shutil
 import subprocess
 
 from tqdm import tqdm
+
+parser = argparse.ArgumentParser(description='Runs newsjam experiments.')
+parser.add_argument('--type', help='The type of experiment (summarization or evaluation). Summarization experiments generate summaries using one of the implemented methods. They are typically very long (hours). Evaluation experiments compute the value of a particular metric on generated summaries. Requires a previous summarization experiment. Those are usually shorter (minutes to an hour).')
+parser.add_argument('--dataset', help='The input dataset for summarization (mlsum, cnn_dailymail, er_actu, guardian)')
+parser.add_argument('--method', help='The summarization method (lsi, flaubert, camembert, roberta)')
+parser.add_argument('--pretrain', default=False, action='store_true', help='Whether to pretrain the input embeddings. Defaults to False if not specified.')
+args = parser.parse_args()
+
+print('========================================')
+print('Newsjam Experiment Running Driver (NERD)')
+print('========================================')
+print()
 
 subprocess.run(['python3', '-m', 'pip', 'install', 'tqdm'])
 
@@ -59,11 +72,6 @@ def get_articles(in_dataset, test=True): # Load reference dataset
     articles = testset if test else trainset
     return articles, nlp, lang
 
-print('========================================')
-print('Newsjam Experiment Running Driver (NERD)')
-print('========================================')
-print()
-
 # Initial downloads
 print('Retrieving Git repository...')
 try:
@@ -80,16 +88,8 @@ subprocess.run(['python3', '-m', 'spacy', 'download', 'en_core_web_trf'])
 print()
 
 # Read parameters
-exp_type = ''
-while exp_type not in ['e', 's']:
-    print('- Summarization experiments generate summaries using one of')
-    print('the implemented methods. They are typically very long (hours).')
-    print('- Evaluation experiments compute the value of a particular metric')
-    print('on generated summaries. Requires a previous summarization experiment.')
-    print('Those are usually shorter (minutes to an hour).')
-    print()
-    exp_type = input('Do you want a [S]ummarization or [E]valuation experiment? ').lower()
-    print()
+
+exp_type = 'e' if args.type == 'evaluation' else 's'
 
 filename_to_params = {
     'da': 'MLSUM FR',
@@ -238,38 +238,13 @@ if exp_type == 'e':
     
 
 if exp_type == 's' or timing:
-    # Read parameters
-    print('The following summarization methods are available:')
-    print('0 - LSA/LSI')
-    print('1 - Embeddings + k-means clustering (FlauBERT)')
-    print('2 - Embeddings + k-means clustering (CamemBERT)')
-    print('3 - Embeddings + k-means clustering (RoBERTa)')
-    print()
-    method = ''
-    while method not in ['0', '1', '2', '3']:
-        method = input('Chosen method: ')
+    method_dict = {'lsi': 0, 'lsa': 0, 'flaubert': 1, 'camembert': 2, 'roberta': 3}
+    dataset_dict = {'mlsum': 0, 'cnn_dailymail': 1, 'er_actu': 2, 'guardian': 3}
     
-    method = methods[int(method)]
-    
-    print()
-    print('The following datasets are available:')
-    print('0 - MLSUM FR')
-    print('1 - MLSUM EN')
-    print('2 - ER/Actu')
-    print('3 - Guardian')
-    in_dataset = ''
-    while in_dataset not in ['0', '1', '2', '3']:
-        in_dataset = input('Chosen dataset: ')
-    
-    in_dataset = datasets[int(in_dataset)]
-    
-    pretraining = False
-    if method != 'LSA/LSI':
-        while pretraining not in ['y', 'n']:
-            pretraining = input('Should input embeddings be pre-trained? [Y/N] ').lower()
-        pretraining = pretraining == 'y'
-    print()
-    
+    method = methods[method_dict[args.method]]
+    in_dataset = datasets[dataset_dict[args.dataset]]
+    pretraining = args.pretrain
+
     # Read dataset and load summarizer
     articles, nlp, lang = get_articles(in_dataset)
     
@@ -324,8 +299,6 @@ if exp_type == 's' or timing:
             print(k.ljust(25), round(v, 3), 's')
     
         print()
-        print('Press [Return] once this is done.')
-        input()
     
     # Save data to file
     filename = os.path.expanduser('~/') + '_'.join([params_to_filename[x] for x in [in_dataset, method, "Yes" if pretraining else "No"]])
