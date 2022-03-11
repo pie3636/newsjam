@@ -56,6 +56,7 @@ def get_articles(in_dataset, test=True): # Load reference dataset
             reader = csv.DictReader(csvfile)    
             for row in reader:
                 if 'text' in row.keys():
+                    row['text'] = row['text'].replace('\n\n', ' ')
                     testset.append(row)
         print('Pre-processing corpus...')
         for article in tqdm(testset):
@@ -243,6 +244,7 @@ if exp_type == 's' or timing:
     
     method = methods[method_dict[args.method]]
     in_dataset = datasets[dataset_dict[args.dataset]]
+    lang = 'en' if in_dataset in ['MLSUM EN', 'Guardian'] else 'fr'
     pretraining = args.pretrain
 
     # Read dataset and load summarizer
@@ -274,9 +276,9 @@ if exp_type == 's' or timing:
     
     for article in tqdm(articles):
         if 'text' in article:
-            gen_summs.append(summ.get_summary(article['text']))
+            gen_summs.append(summ.get_summary(article['text'], lang=lang))
         else:
-            gen_summs.append(summ.get_summary(article['article']))
+            gen_summs.append(summ.get_summary(article['article'], lang=lang))
     
     # Display time measurement results
     if timing:
