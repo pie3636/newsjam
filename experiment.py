@@ -189,11 +189,12 @@ if exp_type == 'e':
     articles, nlp, lang = get_articles(in_dataset) # Read reference dataset
 
     # Prepare keyword sentences
-    if 'summary' in article[0]:
+    if 'summary' in articles[0]:
         ref_summs = [article['summary'] for article in articles]
     else:
         ref_summs = [article['highlights'] for article in articles]
-    other_ref_summs = ['\n'.join(get_keyword_sentences(nlp(summary), lang)) for summary in ref_summs]
+    from newsjam.summ.utils import get_keyword_sentences
+    other_ref_summs = [['\n'.join(x) for x in get_keyword_sentences(nlp(summary), lang)] for summary in ref_summs]
     
     if keywords:
         gen_summs, other_gen_summs = other_gen_summs, gen_summs
@@ -202,7 +203,7 @@ if exp_type == 'e':
     if metric == 'ROUGE-L':
         from newsjam.eval.rouge_l import RougeLEval
         rouge_l_eval = RougeLEval()
-        scores1, scores2 = rouge_l_eval.evaluate_many(zip(ref_summs, other_ref_summs), zip(gen_summs, other_gen_summs))
+        scores1, scores2 = rouge_l_eval.evaluate_many(list(zip(ref_summs, other_ref_summs)), list(zip(gen_summs, other_gen_summs)))
         results = rouge_l_eval.get_results(scores1, scores2)
     elif metric == 'BERTScore':
         from newsjam.eval.bert_eval import BERT_Eval
