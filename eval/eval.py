@@ -6,8 +6,8 @@ class Eval():
     """
     
     def __init__(self):
-        self.nlp = spacy.load("fr_core_news_sm")
-        self.nlp_en = spacy.load('en_core_web_sm')
+        self.nlp = spacy.load("fr_core_news_lg")
+        self.nlp_en = spacy.load('en_core_web_trf')
     
     
     def evaluate_one(self, ref_summ, gen_summ):
