@@ -83,11 +83,17 @@ def build_summary(top_scores, doc, sentences, max_len=280):
     post = Post()
     print('[Summary before post-processing]')
     print(summary)
+    print()
+    print()
     summary = post.rep_search(summary)
     print('[Keyword summary before post-processing]')
     print(keyword_summary)
+    print()
+    print()
     keyword_summary = post.rep_search(keyword_summary)
     print('[Done]')
+    print()
+    print()
     
     # Attempt adding new sentences
     if len(summary) < summary_size:
@@ -95,11 +101,17 @@ def build_summary(top_scores, doc, sentences, max_len=280):
         summary, keyword_summary = _build_summary_2(sentences, all_sents, sents_to_add)
         print('[Summary before 2nd post-processing]')
         print(summary)
+        print()
+        print()
         summary = post.rep_search(summary)
         print('[Keyword summary before 2nd post-processing]')
         print(keyword_summary)
+        print()
+        print()
         keyword_summary = post.rep_search(keyword_summary)
         print('[Done]')
+        print()
+        print()
         
     # Remove the final space/newline
     if summary:
