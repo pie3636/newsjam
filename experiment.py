@@ -166,7 +166,7 @@ if exp_type == 'e':
                 count += 1
             else:
                 cur_summ += line + '\n'
-        gen_summs.append(cur_summ[:-1])
+            gen_summs.append(cur_summ[:-1])
         gen_summs = gen_summs[1:]
     
     # Read second list of generated summaries
@@ -183,7 +183,7 @@ if exp_type == 'e':
                 count += 1
             else:
                 cur_summ += line + '\n'
-        other_gen_summs.append(cur_summ[:-1])
+            other_gen_summs.append(cur_summ[:-1])
         other_gen_summs = other_gen_summs[1:]
     
     articles, nlp, lang = get_articles(in_dataset) # Read reference dataset
@@ -194,7 +194,9 @@ if exp_type == 'e':
     else:
         ref_summs = [article['highlights'] for article in articles]
     from newsjam.summ.utils import get_keyword_sentences
-    other_ref_summs = [['\n'.join(x) for x in get_keyword_sentences(nlp(summary), lang)] for summary in ref_summs]
+    
+    print('Generating all keyword summaries')
+    other_ref_summs = ['\n'.join(x for x in get_keyword_sentences(nlp(summary), lang)) for summary in tqdm(ref_summs)]
     
     if keywords:
         gen_summs, other_gen_summs = other_gen_summs, gen_summs
@@ -203,7 +205,7 @@ if exp_type == 'e':
     if metric == 'ROUGE-L':
         from newsjam.eval.rouge_l import RougeLEval
         rouge_l_eval = RougeLEval()
-        scores1, scores2 = rouge_l_eval.evaluate_many(list(zip(ref_summs, other_ref_summs)), list(zip(gen_summs, other_gen_summs)))
+        scores1, scores2 = rouge_l_eval.evaluate_many(ref_summs, list(zip(gen_summs, other_gen_summs)))
         results = rouge_l_eval.get_results(scores1, scores2)
     elif metric == 'BERTScore':
         from newsjam.eval.bert_eval import BERT_Eval
@@ -230,10 +232,12 @@ if exp_type == 'e':
     if not timing:
         import os
         os.system('cls' if os.name == 'nt' else 'clear')
-        print('Please post the following block of text to the #eval-results channel on Discord:')
+        d, m, p, k = [filename_to_params[x] for x in in_file.split('.')[0].split('_')]
+        print('Please post the following block of text to the #eval-results-paper channel on Discord:')
         print()
         print('='*50)
         print(f'Results for {in_file} / {metric}' + (f' (pretrained)' if pretraining2 else ''))
+        print(f'{d - m - p - k}')
         print('='*50)
         for k, v in results.items():
             print(k.ljust(25), round(v*100, 3), '%')
