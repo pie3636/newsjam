@@ -15,23 +15,21 @@ class Post:
         '''
         Function to catch and get rid of repeating phrases
         '''
-         
-        for x in range(len(text.split(' '))):
+             
+        exp = r'((\(?\b\S+\b[\;]?)(\s+[\b\S\.\,\!\&\s]*\)?[\.]*))\s*(\1)+'
+        search = re.search(exp, text, re.UNICODE)
+        find = re.findall(exp, text, re.UNICODE)
+        
+        if search:
+            # starting index of the phrase repetitions
+            start = search.span()[0]
+            # area containing single instance of phrase that is repeated
+            middle = start + len(find[0][0])
+            # ending index of the phrase repetitions
+            end = search.span()[1]
             
-            exp = rf'((\(*[\$€£«\'\"]*\s*[A-Z]*\S+\b\s*[\$€£\.\,\!\?\&\%\s]*[»\'\"]?\)*)([\s\,\:\;]+\(*[\$€£«\'\"]*\s*\b\S+\b\s*[\$€£\.\,\!\?\&\%\s]*[»\'\"]?\)*){{{x}}}([\s\,\:\;]+\(*[\$€£«\'\"]*\s*\b\S+\s*[\$€£\.\,\!\?\&\%\s]*[»\'\"]?\)*[\.\?\!]?))\s*(\1)+'
-            search = re.search(exp, text, re.UNICODE)
-            find = re.findall(exp, text, re.UNICODE)
-            
-            if search:
-                # starting index of the phrase repetitions
-                start = search.span()[0]
-                # area containing single instance of phrase that is repeated
-                middle = start + len(find[0][0])
-                # ending index of the phrase repetitions
-                end = search.span()[1]
-                
-                new_text = text[0:middle] + text[end:]
-                return self.rep_search(new_text)
+            new_text = text[0:middle] + text[end:]
+            return self.rep_search(new_text)
                 
         if not search:
             # If there are no repetitions in the string
