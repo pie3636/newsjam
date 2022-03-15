@@ -11,8 +11,8 @@ from .eval import Eval
 
 class BERT_Eval(Eval):
     def __init__(self):
-        self.scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
-        self.scorer_en = BERTScorer(lang='en', rescale_with_baseline=True)
+        self.scorer = BERTScorer(lang='fr', rescale_with_baseline=False)
+        self.scorer_en = BERTScorer(lang='en', rescale_with_baseline=False)
         super().__init__()
 
     def split_summs(self, gen_summs, ref_summs,gen_keys=False, lang='fr'):

@@ -8,7 +8,7 @@ from tqdm import tqdm
 from .eval import Eval
 
 class WordMoverEval(Eval):
-    def __init__(self, in_file=None, model=None, posttraining={}):
+    def __init__(self, in_file=None, model=None, pretraining={}):
         if model is not None:
             self.model = model
         elif in_file is not None:
@@ -18,10 +18,10 @@ class WordMoverEval(Eval):
                 self.model = keyedvectors.load_word2vec_format(in_file)
         else:
             raise ValueError('A fasttext model or input file must be specified.')
-        if len(posttraining):
-            sents = posttraining['sents']
+        if len(pretraining):
+            sents = pretraining['sents']
             self.model.build_vocab(sents, update=True)
-            self.model.train(sentences=sents, total_examples=len(sent), epochs=posttraining['epochs'])
+            self.model.train(sentences=sents, total_examples=len(sent), epochs=pretraining['epochs'])
         super().__init__()
 
 
@@ -58,7 +58,7 @@ class WordMoverEval(Eval):
 
         # Compute and return the scores
         scores = self.model.wmdistance(ref_summary, long_summ)
-        scores_keyword = self.model.wmdistance(keyword_ref_summary, short_summ)
+        scores_keyword = self.model.wv.wmdistance(keyword_ref_summary, short_summ)
         return scores, scores_keyword
 
 
@@ -84,3 +84,20 @@ class WordMoverEval(Eval):
             long_eval_list.append(long_eval)
             keyword_eval_list.append(keyword_eval)
         return long_eval_list, keyword_eval_list
+    
+    def get_results(self, long_scores, keyword_scores):
+		"""
+			Computes the average evaluation scores from a list
+			Arguments:
+				`long_scores`		 A list containing all evaluation scores for full generated summaries
+				`keyword_scores`     A list containing all evaluation scores for keyword-only generated summaries
+			Returns a dict containing the average score for both full and keyword_only generated summaries
+		"""
+		data_len = len(long_scores)
+
+		results = {}
+		results["Long avg"] = sum(long_scores) / data_len
+		results["Keyword avg"] = sum(keyword_scores) / data_len
+		
+		return results
+
