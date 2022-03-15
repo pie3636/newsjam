@@ -52,11 +52,14 @@ class Pre:
         Function to get rid of unnecessary phrases found in some of our French corpus articles
         '''
         
-        exp1 = "Ce contenu est bloqué car vous n'avez pas accepté les traceurs\. "
-        exp2 = "En cliquant sur « J’accepte », les traceurs seront déposés et vous pourrez visualiser les contenus \. "
-        exp3 = "En cliquant sur « J’accepte tous les traceurs », vous autorisez des dépôts de traceurs pour le stockage de vos données sur nos sites et applications à des fins de personnalisation et de ciblage publicitaire\. "
+        exp1 = "Ce contenu est bloqué car vous n'avez pas accepté les traceurs . "
+        exp2 = "En cliquant sur « J’accepte », les traceurs seront déposés et vous pourrez visualiser les contenus . "
+        exp3 = "En cliquant sur « J’accepte tous les traceurs », vous autorisez des dépôts de traceurs pour le stockage de vos données sur nos sites et applications à des fins de personnalisation et de ciblage publicitaire. "
+        exp4 = "Mon actu Suivre "
+        exp5 = "Plus d'informations dans notre article. "
+        exp6 = r"Article réservé à nos abonnés[\n|\s]*"
         
-        exp_list = [exp1, exp2, exp3]
+        exp_list = [exp1, exp2, exp3, exp4, exp5, exp6]
         
         for exp in exp_list:
             search = re.search(exp, text)
@@ -76,11 +79,11 @@ class Pre:
         
         exp1 = "Sign up to the daily Business Today email or follow Guardian Business on Twitter at @BusinessDesk "
         exp2 = "Sign up to receive the top stories from Guardian Australia every morning "
-        exp3 = "Quick Guide How do I sign up for sport breaking news alerts\? Show Download the Guardian app from the iOS App Store on iPhones or the Google Play store on Android phones by searching for 'The Guardian'\. "
-        exp4 = "If you already have the Guardian app, make sure you’re on the most recent version\. "
-        exp5 = "In the Guardian app, tap the yellow button at the bottom right, then go to Settings (the gear icon), then Notifications\. "
-        exp6 = "Turn on sport notifications\. Was this helpful\? Thank you for your feedback\. "
-        exp7 = "Allow TikTok content\? This article includes content provided by TikTok \. We ask for your permission before anything is loaded, as they may be using cookies and other technologies\. To view this content, click 'Allow and continue'\. Allow and continue "
+        exp3 = "Quick Guide How do I sign up for sport breaking news alerts? Show Download the Guardian app from the iOS App Store on iPhones or the Google Play store on Android phones by searching for 'The Guardian'. "
+        exp4 = "If you already have the Guardian app, make sure you’re on the most recent version. "
+        exp5 = "In the Guardian app, tap the yellow button at the bottom right, then go to Settings (the gear icon), then Notifications. "
+        exp6 = "Turn on sport notifications. Was this helpful? Thank you for your feedback. "
+        exp7 = "Allow TikTok content? This article includes content provided by TikTok. We ask for your permission before anything is loaded, as they may be using cookies and other technologies. To view this content, click 'Allow and continue'. Allow and continue "
         exp8 = "Sign up to receive an email with the top stories from Guardian Australia every morning "
         
         exp_list = [exp1, exp2, exp3, exp4, exp5, exp6, exp7, exp8]
