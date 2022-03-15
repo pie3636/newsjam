@@ -112,6 +112,11 @@ def build_summary(top_scores, doc, sentences, max_len=280):
         print('[Done]', flush=True)
         print('', flush=True)
         print('', flush=True)
+    
+    print('[Output summaries]')
+    print(summary, flush=True)
+    print()
+    print(keyword_summary, flush=True)
         
     # Remove the final space/newline
     if summary:
