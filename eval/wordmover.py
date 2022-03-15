@@ -18,7 +18,7 @@ class WordMoverEval(Eval):
                 self.model = keyedvectors.load_word2vec_format(in_file)
         else:
             raise ValueError('A fasttext model or input file must be specified.')
-        if len(pretraining):
+        if pretraining:
             sents = pretraining['sents']
             self.model.build_vocab(sents, update=True)
             self.model.train(sentences=sents, total_examples=len(sent), epochs=pretraining['epochs'])
@@ -41,6 +41,8 @@ class WordMoverEval(Eval):
         # Also make a copy that is stemmed and has no stopwords to compare it with the
         # keyword-only generated summary
         long_summ, short_summ = gen_summ
+        if not long_summ:
+            return 0., 0.
 
         summ = self.nlp(ref_summ)
         summ_sentences = []
@@ -55,9 +57,10 @@ class WordMoverEval(Eval):
         # Put the summaries together using newlines (required by RougeScorer)
         ref_summary = '\n'.join([sent.text for sent in summ.sents])
         keyword_ref_summary = '\n'.join([' '.join(sent) for sent in summ_sentences])
+     
 
         # Compute and return the scores
-        scores = self.model.wmdistance(ref_summary, long_summ)
+        scores = self.model.wv.wmdistance(ref_summary, long_summ)
         scores_keyword = self.model.wv.wmdistance(keyword_ref_summary, short_summ)
         return scores, scores_keyword
 
@@ -85,19 +88,18 @@ class WordMoverEval(Eval):
             keyword_eval_list.append(keyword_eval)
         return long_eval_list, keyword_eval_list
     
-    def get_results(self, long_scores, keyword_scores):
-		"""
-			Computes the average evaluation scores from a list
-			Arguments:
-				`long_scores`		 A list containing all evaluation scores for full generated summaries
-				`keyword_scores`     A list containing all evaluation scores for keyword-only generated summaries
-			Returns a dict containing the average score for both full and keyword_only generated summaries
-		"""
-		data_len = len(long_scores)
+    def get_results(self, long_scores, keyword_scores):    
+        """
+        Computes the average evaluation scores from a list
+            Arguments:
+                `long_scores`         A list containing all evaluation scores for full generated summaries
+                `keyword_scores`     A list containing all evaluation scores for keyword-only generated summaries
+            Returns a dict containing the average score for both full and keyword_only generated summaries
+        """
+        data_len = len(long_scores)
 
-		results = {}
-		results["Long avg"] = sum(long_scores) / data_len
-		results["Keyword avg"] = sum(keyword_scores) / data_len
-		
-		return results
+        results = {}
+        results["Long avg"] = sum(long_scores) / data_len
+        results["Keyword avg"] = sum(keyword_scores) / data_len
+        return results
 

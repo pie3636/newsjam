@@ -67,8 +67,8 @@ class BERT_Eval(Eval):
             return long_summs, short_summs, ref_summs, key_ref_summs
 
         # If we do not want to generate keyword summaries
-        else:
-            long_summs = []
+    else:
+        long_summs = []
             for x in range(len(gen_summs)):
                 long_summs.append(gen_summs[x][0])
 
@@ -97,16 +97,23 @@ class BERT_Eval(Eval):
                 # F1 = F1-score
 
                 results = {}
-                results["Long precision avg"] = ('%.4f' % (P_long.mean()))
-                results["Long recall avg"] = ('%.4f' % (R_long.mean()))
-                results["Long F1-score avg"] = ('%.4f' % (F1_long.mean()))
-                results["Keyword precision avg"] = ('%.4f' % (P_key.mean()))
-                results["Keyword recall avg"] = ('%.4f' % (R_key.mean()))
-                results["Keyword F1-score avg"] = ('%.4f' % (F1_key.mean()))
+                results["Rescaled Long precision avg"] = P_long_1.mean()
+                results["Rescaled Long recall avg"] = R_long_1.mean()
+                results["Rescaled Long F1-score avg"] = F1_long_1.mean()
+                results["Rescaled Keyword precision avg"] = P_key_1.mean()
+                results["Rescaled Keyword recall avg"] = R_key_1.mean()
+                results["Rescaled Keyword F1-score avg"] = F1_key_1.mean()
+
+                results["Long precision avg"] = P_long_2.mean()
+                results["Long recall avg"] = R_long_2.mean()
+                results["Long F1-score avg"] = F1_long_2.mean()
+                results["Keyword precision avg"] = P_key_2.mean()
+                results["Keyword recall avg"] = R_key_2.mean()
+                results["Keyword F1-score avg"] = F1_key_2.mean()
 
             # Condition to look at one score
-            else:
-                long_summ = [long_summs[index]]
+        else:
+            long_summ = [long_summs[index]]
                 ref_summ = [ref_summs[index]]
                 short_summ = [short_summs[index]]
                 key_ref_summ = [key_ref_summs[index]]
@@ -115,35 +122,50 @@ class BERT_Eval(Eval):
                 P_key, R_key, F1_key = scorer.score(short_summ, key_ref_summ, verbose=True)
 
                 results = {}
-                results["Long precision avg"] = ('%.4f' % (P_long))
-                results["Long recall avg"] = ('%.4f' % (R_long))
-                results["Long F1-score avg"] = ('%.4f' % (F1_long))
-                results["Keyword precision avg"] = ('%.4f' % (P_key))
-                results["Keyword recall avg"] = ('%.4f' % (R_key))
-                results["Keyword F1-score avg"] = ('%.4f' % (F1_key))
+                results["Rescaled Long precision avg "] = P_long_1
+                results["Rescaled Long recall avg"] = R_long_1
+                results["Rescaled Long F1-score avg"] = F1_long_1
+                results["Rescaled Keyword precision avg"] = P_key_1
+                results["Rescaled Keyword recall avg"] = R_key_1
+                results["Rescaled Keyword F1-score avg"] = F1_key_1
+
+                results["Long precision avg"] = P_long_2
+                results["Long recall avg"] = R_long_2
+                results["Long F1-score avg"] = F1_long_2
+                results["Keyword precision avg"] = P_key_2
+                results["Keyword recall avg"] = R_key_2
+                results["Keyword F1-score avg"] = F1_key_2
 
         # Condition if we only want to evaluate the long/non-tokenized versions of summaries
-        else:
-            # Condition to look at average long scores for whole dataset
+    else:
+        # Condition to look at average long scores for whole dataset
             if index == None:
                 P_long, R_long, F1_long = scorer.score(long_summs, ref_summs, verbose=True)
 
                 results = {}
-                results["Long precision avg"] = ('%.4f' % (P_long.mean()))
-                results["Long recall avg"] = ('%.4f' % (R_long.mean()))
-                results["Long F1-score avg"] = ('%.4f' % (F1_long.mean()))
+                results["Rescaled Long precision avg"] = float(P_long_1.mean())
+                results["Rescaled Long recall avg"] = float(R_long_1.mean())
+                results["Rescaled Long F1-score avg"] = float(F1_long_1.mean())
+
+                results["Long precision avg"] = float(P_long_2.mean())
+                results["Long recall avg"] = float(R_long_2.mean())
+                results["Long F1-score avg"] = float(F1_long_2.mean())
 
             # Condition to look at one long score
-            else:
-                long_summ = [long_summs[index]]
+        else:
+            long_summ = [long_summs[index]]
                 ref_summ = [ref_summs[index]]
 
                 P_long, R_long, F1_long = scorer.score(long_summ, ref_summ, verbose=True)
 
                 results = {}
-                results["Long precision avg"] = ('%.4f' % (P_long))
-                results["Long recall avg"] = ('%.4f' % (R_long))
-                results["Long F1-score avg"] = ('%.4f' % (F1_long))
+                results["Rescaled Long precision avg"] = P_long_1
+                results["Rescaled Long recall avg"] = R_long_1
+                results["Rescaled Long F1-score avg"] = F1_long_1
+
+                results["Long precision avg"] = P_long_2
+                results["Long recall avg"] = R_long_2
+                results["Long F1-score avg"] = F1_long_2
 
         return results
 

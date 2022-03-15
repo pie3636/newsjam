@@ -10,6 +10,8 @@ parser.add_argument('--type', help='The type of experiment (summarization or eva
 parser.add_argument('--dataset', help='The input dataset for summarization (mlsum, cnn_dailymail, er_actu, guardian)')
 parser.add_argument('--method', help='The summarization method (lsi, flaubert, camembert, roberta)')
 parser.add_argument('--pretrain', default=False, action='store_true', help='Whether to pretrain the input embeddings. Defaults to False if not specified.')
+parser.add_argument('--split', type=int, default=1, help='The index of the dataset split to work on (starts at 1).')
+parser.add_argument('--of', type=int, default=1, help='The number of splits to be considered for the dataset.')
 args = parser.parse_args()
 
 print('========================================')
@@ -61,7 +63,6 @@ def get_articles(in_dataset, test=True): # Load reference dataset
         print('Pre-processing corpus...')
         for article in tqdm(testset):
             article['text'] = pre.en_phrases(article['text'])
-    
     # Prepare keyword sentences
     import spacy
     if in_dataset in ['MLSUM_FR', 'ER/Actu']:
@@ -143,16 +144,16 @@ if exp_type == 'e':
     metric = ''
     while metric not in ['0', '1', '2', '3']:
         metric = input('Chosen metric: ')
-    
+
     metric = metrics[int(metric)]
-    
+
+    pretraining2 = ''
     if metric == 'Word Mover distance':
-        pretraining2 = ''
         while pretraining2 not in ['y', 'n']:
             pretraining2 = input('Should embeddings be fine-tuned for Word Mover Distance evaluation? [Y/N] ').lower()
         pretraining2 = pretraining2 == 'y'
     print()
-    
+
     # Read generated summaries
     with open('gen/' + in_file, encoding='utf-8') as f:
         data = f.read().split('\n')
@@ -168,7 +169,7 @@ if exp_type == 'e':
                 cur_summ += line + '\n'
         gen_summs.append(cur_summ[:-1])
         gen_summs = gen_summs[1:]
-    
+
     # Read second list of generated summaries
     other = in_file.replace('_0.txt', '_2.txt').replace('_1.txt', '_0.txt').replace('_2.txt', '_1.txt')
     with open('gen/' + other, encoding='utf-8') as f:
@@ -185,7 +186,7 @@ if exp_type == 'e':
                 cur_summ += line + '\n'
         other_gen_summs.append(cur_summ[:-1])
         other_gen_summs = other_gen_summs[1:]
-    
+
     articles, nlp, lang = get_articles(in_dataset) # Read reference dataset
 
     # Prepare keyword sentences
@@ -193,15 +194,15 @@ if exp_type == 'e':
         ref_summs = [article['summary'] for article in articles]
     else:
         ref_summs = [article['highlights'] for article in articles]
-        
+
     from newsjam.summ.utils import get_keyword_sentences
-    
+
     print('Generating all keyword summaries')
     other_ref_summs = ['\n'.join([' '.join(x) for x in get_keyword_sentences(nlp(summary), lang)]) for summary in tqdm(ref_summs)]
-    
+
     if keywords:
         gen_summs, other_gen_summs = other_gen_summs, gen_summs
-        
+
     # Compute metric
     if metric == 'ROUGE-L':
         from newsjam.eval.rouge_l import RougeLEval
@@ -215,7 +216,9 @@ if exp_type == 'e':
     elif metric == 'Word Mover distance':
         from newsjam.eval.wordmover import WordMoverEval
         import fasttext.util
-        model = fasttext.load_model(f'cc.{lang}.300.bin')
+        fasttext.util.download_model(f'{lang}', if_exists='ignore')
+        import gensim.models
+        model = gensim.models.fasttext.load_facebook_model(f'cc.{lang}.300.bin')
         if pretraining2:
             if 'text' in article:
                 orig_sents = [nlp(article['text']).sents for article in articles]
@@ -224,12 +227,12 @@ if exp_type == 'e':
             pretraining = {'epochs': 5, 'sents': orig_sents}
         else:
             pretraining = {}
-        wordmover_eval = WordMoverEval(model, pretraining=pretraining2)
-        scores1, scores2 = wordmover_eval.evaluate_many(ref_summs, gen_summs)
-        results = rouge_l_eval.get_results(scores1, scores2)
+        wordmover_eval = WordMoverEval(model=model, pretraining=pretraining)
+        scores1, scores2 = wordmover_eval.evaluate_many(ref_summs, list(zip(gen_summs, other_gen_summs)))
+        results = wordmover_eval.get_results(scores1, scores2)
     elif metric == 'Time measurement':
         timing = True
-    
+
     # Display results
     if not timing:
         import os
@@ -238,17 +241,20 @@ if exp_type == 'e':
         print('Please post the following block of text to the #eval-results-paper channel on Discord:')
         print()
         print('='*50)
-        print(f'Results for {in_file} / {metric}' + (f' (pretrained)' if pretraining2 else ''))
-        print(f'{d - m - p - k}')
+        disp = f'Results for {in_file} / {metric}'
+        if metric == 'Word Mover Distance' and pretraining2:
+            disp += ' (pretrained)'
+        print(disp)
+        print(f'{d} - {m} - {p} - {k}')
         print('='*50)
         for k, v in results.items():
             print(k.ljust(25), round(v*100, 3), '%')
-    
+
 
 if exp_type == 's' or timing:
     method_dict = {'lsi': 0, 'lsa': 0, 'flaubert': 1, 'camembert': 2, 'roberta': 3}
     dataset_dict = {'mlsum': 0, 'cnn_dailymail': 1, 'er_actu': 2, 'guardian': 3}
-    
+
     method = methods[method_dict[args.method]]
     in_dataset = datasets[dataset_dict[args.dataset]]
     lang = 'en' if in_dataset in ['MLSUM EN', 'Guardian'] else 'fr'
@@ -256,7 +262,13 @@ if exp_type == 's' or timing:
 
     # Read dataset and load summarizer
     articles, nlp, lang = get_articles(in_dataset)
-    
+    len_art = len(articles) // args.of
+    idx_start = (args.split-1)*len_art
+    if args.split == args.of:
+        articles = [articles[x] for x in range((args.split-1)*len_art, len(articles))]
+    else:
+        articles = [articles[x] for x in range((args.split-1)*len_art, args.split*len_art)]
+
     if method == 'LSA/LSI':
         from newsjam.summ.lsa import LSASummarizer
         summ = LSASummarizer()
@@ -269,24 +281,24 @@ if exp_type == 's' or timing:
     elif method == 'k-means (RoBERTa)':
         from newsjam.summ.bert_embed import BertEmbeddingsSummarizer
         summ = BertEmbeddingsSummarizer('roberta-base')
-    
+
     # Pre-train BERT model
     if pretraining:
         trainset, _, _ = get_articles(in_dataset, False) # TODO
-    
+
     # Run summarization
     gen_summs = []
-    
+
     if timing:
         from timeit import default_timer as timer
         start = timer()
-    
+
     for article in tqdm(articles):
         if 'text' in article:
             gen_summs.append(summ.get_summary(article['text'], lang=lang))
         else:
             gen_summs.append(summ.get_summary(article['article'], lang=lang))
-    
+
     # Display time measurement results
     if timing:
         end = timer()
@@ -295,7 +307,7 @@ if exp_type == 's' or timing:
             'Time': duration,
             'Time/article': duration/len(articles),
             'Time/1000 chars': 1000*duration/sum(len([x['text'] if 'text' in article else x['article'] for x in articles]))
-        
+
         }
         import os
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -306,26 +318,29 @@ if exp_type == 's' or timing:
         print('='*50)
         for k, v in results.items():
             print(k.ljust(25), round(v, 3), 's')
-    
+
         print()
-    
+
     # Save data to file
     filename = os.path.expanduser('~/') + '_'.join([params_to_filename[x] for x in [in_dataset, method, "Yes" if pretraining else "No"]])
     filename_full = filename + '_0.txt'
     filename_kw = filename + '_1.txt'
+    if args.of > 1:
+        filename_full += f'.{args.split}.{args.of}'
+        filename_kw += f'.{args.split}.{args.of}'
     f = open(filename_full, 'w')
     f2 = open(filename_kw, 'w')
     for i, (full_summ, kw_summ) in enumerate(gen_summs):
-        f.write(str(i) + '\n')
+        f.write(str(i + idx_start) + '\n')
         f.write(full_summ + '\n')
-        f2.write(str(i) + '\n')
+        f2.write(str(i + idx_start) + '\n')
         f2.write(kw_summ + '\n')
     f.close()
     f2.close()
-    
+
     import getpass
     username = getpass.getuser()
-    
+
     print('='*80)
     print()
     print('===================')
@@ -345,4 +360,3 @@ if exp_type == 's' or timing:
     print('The files will be saved to the user/home folder of your local computer.')
     print('Then upload them to the gen/ folder on GitHub.')
     print('='*80)
-    
