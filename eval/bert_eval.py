@@ -11,8 +11,16 @@ from .eval import Eval
 
 class BERT_Eval(Eval):
     def __init__(self):
-        self.scorer = BERTScorer(lang='fr', rescale_with_baseline=True)
-        self.scorer_en = BERTScorer(model_type='microsoft/deberta-xlarge-mnli', lang='en', rescale_with_baseline=True)
+
+        '''
+        - 1 = rescale_with_baseline=True
+        - 2 = rescale_with_baseline=False
+        '''
+        self.scorer_1 = BERTScorer(lang='fr', rescale_with_baseline=True)
+        self.scorer_2 = BERTScorer(lang='fr', rescale_with_baseline=False)
+
+        self.scorer_en_1 = BERTScorer(model_type='microsoft/deberta-xlarge-mnli', lang='en', rescale_with_baseline=True)
+        self.scorer_en_2 = BERTScorer(model_type='microsoft/deberta-xlarge-mnli', lang='en', rescale_with_baseline=False)
         super().__init__()
 
     def split_summs(self, gen_summs, ref_summs,gen_keys=False, lang='fr'):
@@ -82,34 +90,41 @@ class BERT_Eval(Eval):
         '''
 
         if lang == 'fr':
-            scorer = self.scorer
+            scorer_1 = self.scorer_1
+            scorer_2 = self.scorer_2
         elif lang == 'en':
-            scorer = self.scorer_en
+            scorer_1 = self.scorer_en_1
+            scorer_2 = self.scorer_en_2
+
 
         # Condition if we do want to look at the keyword summaries (short_summs & key_ref_summs)
         if short_summs != None and key_ref_summs != None:
             # Condition to look at average score for whole dataset
             if index == None:
-                P_long, R_long, F1_long = scorer.score(long_summs, ref_summs, verbose=True)
-                P_key, R_key, F1_key = scorer.score(short_summs, key_ref_summs, verbose=True)
+                P_long_1, R_long_1, F1_long_1 = scorer_1.score(long_summs, ref_summs, verbose=True)
+                P_key_1, R_key_1, F1_key_1 = scorer_1.score(short_summs, key_ref_summs, verbose=True)
+
+                P_long_2, R_long_2, F1_long_2 = scorer_2.score(long_summs, ref_summs, verbose=True)
+                P_key_2, R_key_2, F1_key_2 = scorer_2.score(short_summs, key_ref_summs, verbose=True)
                 # P = precision
                 # R = recall
                 # F1 = F1-score
 
                 results = {}
-                results["Rescaled Long precision avg"] = P_long_1.mean()
-                results["Rescaled Long recall avg"] = R_long_1.mean()
-                results["Rescaled Long F1-score avg"] = F1_long_1.mean()
-                results["Rescaled Keyword precision avg"] = P_key_1.mean()
-                results["Rescaled Keyword recall avg"] = R_key_1.mean()
-                results["Rescaled Keyword F1-score avg"] = F1_key_1.mean()
+                results["Rescaled Long precision avg"] = ('%.4f' % (P_long_1.mean()))
+                results["Rescaled Long recall avg"] = ('%.4f' % (R_long_1.mean()))
+                results["Rescaled Long F1-score avg"] = ('%.4f' % (F1_long_1.mean()))
+                results["Rescaled Keyword precision avg"] = ('%.4f' % (P_key_1.mean()))
+                results["Rescaled Keyword recall avg"] = ('%.4f' % (R_key_1.mean()))
+                results["Rescaled Keyword F1-score avg"] = ('%.4f' % (F1_key_1.mean()))
 
-                results["Long precision avg"] = P_long_2.mean()
-                results["Long recall avg"] = R_long_2.mean()
-                results["Long F1-score avg"] = F1_long_2.mean()
-                results["Keyword precision avg"] = P_key_2.mean()
-                results["Keyword recall avg"] = R_key_2.mean()
-                results["Keyword F1-score avg"] = F1_key_2.mean()
+                results["Long precision avg"] = ('%.4f' % (P_long_2.mean()))
+                results["Long recall avg"] = ('%.4f' % (R_long_2.mean()))
+                results["Long F1-score avg"] = ('%.4f' % (F1_long_2.mean()))
+                results["Keyword precision avg"] = ('%.4f' % (P_key_2.mean()))
+                results["Keyword recall avg"] = ('%.4f' % (R_key_2.mean()))
+                results["Keyword F1-score avg"] = ('%.4f' % (F1_key_2.mean()))
+
 
             # Condition to look at one score
         else:
@@ -118,54 +133,60 @@ class BERT_Eval(Eval):
                 short_summ = [short_summs[index]]
                 key_ref_summ = [key_ref_summs[index]]
 
-                P_long, R_long, F1_long = scorer.score(long_summ, ref_summ, verbose=True)
-                P_key, R_key, F1_key = scorer.score(short_summ, key_ref_summ, verbose=True)
+                P_long_1, R_long_1, F1_long_1 = scorer_1.score(long_summ, ref_summ, verbose=True)
+                P_key_1, R_key_1, F1_key_1 = scorer_1.score(short_summ, key_ref_summ, verbose=True)
+
+                P_long_2, R_long_2, F1_long_2 = scorer_2.score(long_summ, ref_summ, verbose=True)
+                P_key_2, R_key_2, F1_key_2 = scorer_2.score(short_summ, key_ref_summ, verbose=True)
 
                 results = {}
-                results["Rescaled Long precision avg "] = P_long_1
-                results["Rescaled Long recall avg"] = R_long_1
-                results["Rescaled Long F1-score avg"] = F1_long_1
-                results["Rescaled Keyword precision avg"] = P_key_1
-                results["Rescaled Keyword recall avg"] = R_key_1
-                results["Rescaled Keyword F1-score avg"] = F1_key_1
 
-                results["Long precision avg"] = P_long_2
-                results["Long recall avg"] = R_long_2
-                results["Long F1-score avg"] = F1_long_2
-                results["Keyword precision avg"] = P_key_2
-                results["Keyword recall avg"] = R_key_2
-                results["Keyword F1-score avg"] = F1_key_2
+                results["Rescaled Long precision avg "] = ('%.4f' % (P_long_1))
+                results["Rescaled Long recall avg"] = ('%.4f' % (R_long_1))
+                results["Rescaled Long F1-score avg"] = ('%.4f' % (F1_long_1))
+                results["Rescaled Keyword precision avg"] = ('%.4f' % (P_key_1))
+                results["Rescaled Keyword recall avg"] = ('%.4f' % (R_key_1))
+                results["Rescaled Keyword F1-score avg"] = ('%.4f' % (F1_key_1))
+
+                results["Long precision avg"] = ('%.4f' % (P_long_2))
+                results["Long recall avg"] = ('%.4f' % (R_long_2))
+                results["Long F1-score avg"] = ('%.4f' % (F1_long_2))
+                results["Keyword precision avg"] = ('%.4f' % (P_key_2))
+                results["Keyword recall avg"] = ('%.4f' % (R_key_2))
+                results["Keyword F1-score avg"] = ('%.4f' % (F1_key_2))
 
         # Condition if we only want to evaluate the long/non-tokenized versions of summaries
     else:
         # Condition to look at average long scores for whole dataset
             if index == None:
-                P_long, R_long, F1_long = scorer.score(long_summs, ref_summs, verbose=True)
+                P_long_1, R_long_1, F1_long_1 = scorer_1.score(long_summs, ref_summs, verbose=True)
+                P_long_2, R_long_2, F1_long_2 = scorer_2.score(long_summs, ref_summs, verbose=True)
 
                 results = {}
-                results["Rescaled Long precision avg"] = float(P_long_1.mean())
-                results["Rescaled Long recall avg"] = float(R_long_1.mean())
-                results["Rescaled Long F1-score avg"] = float(F1_long_1.mean())
+                results["Rescaled Long precision avg"] = ('%.4f' % (P_long_1.mean()))
+                results["Rescaled Long recall avg"] = ('%.4f' % (R_long_1.mean()))
+                results["Rescaled Long F1-score avg"] = ('%.4f' % (F1_long_1.mean()))
 
-                results["Long precision avg"] = float(P_long_2.mean())
-                results["Long recall avg"] = float(R_long_2.mean())
-                results["Long F1-score avg"] = float(F1_long_2.mean())
+                results["Long precision avg"] = ('%.4f' % (P_long_2.mean()))
+                results["Long recall avg"] = ('%.4f' % (R_long_2.mean()))
+                results["Long F1-score avg"] = ('%.4f' % (F1_long_2.mean()))
 
             # Condition to look at one long score
         else:
             long_summ = [long_summs[index]]
                 ref_summ = [ref_summs[index]]
 
-                P_long, R_long, F1_long = scorer.score(long_summ, ref_summ, verbose=True)
+                P_long_1, R_long_1, F1_long_1 = scorer_1.score(long_summ, ref_summ, verbose=True)
+                P_long_2, R_long_2, F1_long_2 = scorer_2.score(long_summ, ref_summ, verbose=True)
 
                 results = {}
-                results["Rescaled Long precision avg"] = P_long_1
-                results["Rescaled Long recall avg"] = R_long_1
-                results["Rescaled Long F1-score avg"] = F1_long_1
+                results["Rescaled Long precision avg"] = ('%.4f' % (P_long_1))
+                results["Rescaled Long recall avg"] = ('%.4f' % (R_long_1))
+                results["Rescaled Long F1-score avg"] = ('%.4f' % (F1_long_1))
 
-                results["Long precision avg"] = P_long_2
-                results["Long recall avg"] = R_long_2
-                results["Long F1-score avg"] = F1_long_2
+                results["Long precision avg"] = ('%.4f' % (P_long_2))
+                results["Long recall avg"] = ('%.4f' % (R_long_2))
+                results["Long F1-score avg"] = ('%.4f' % (F1_long_2))
 
         return results
 
