@@ -28,7 +28,7 @@ def get_articles(in_dataset, test=True): # Load reference dataset
         dataset = load_dataset('mlsum', 'fr')
         testset = dataset['test']
         trainset = dataset['train']
-    elif in_dataset == 'MLSUM EN':
+    elif in_dataset == 'CNN/DailyMail':
         from datasets import load_dataset
         dataset = load_dataset('cnn_dailymail', '3.0.0')
         testset = dataset['test']
@@ -95,7 +95,7 @@ exp_type = 'e' if args.type == 'evaluation' else 's'
 
 filename_to_params = {
     'da': 'MLSUM FR',
-    'db': 'MLSUM EN',
+    'db': 'CNN/DailyMail',
     'dc': 'ER/Actu',
     'dd': 'Guardian',
     'ma': 'LSA/LSI',
@@ -110,7 +110,7 @@ params_to_filename = {v: k for k, v in filename_to_params.items()}
 
 metrics = ['ROUGE-L', 'BERTScore', 'Word Mover distance', 'Time measurement']
 methods = ['LSA/LSI', 'k-means (FlauBERT)', 'k-means (CamemBERT)', 'k-means (RoBERTa)']
-datasets = ['MLSUM FR', 'MLSUM EN', 'ER/Actu', 'Guardian']
+datasets = ['MLSUM FR', 'CNN/DailyMail', 'ER/Actu', 'Guardian']
 
 timing = False
 
@@ -118,12 +118,12 @@ timing = False
 if exp_type == 'e':
     print('The following files are available (in the GitHub repository, "gen" folder):')
     print()
-    in_files = list(os.listdir('gen'))
+    in_files = sorted(list(os.listdir('gen')))
     print('ID  Filename            Dataset   Method                   Pretraining    Keywords')
     print('----------------------------------------------------------------------------------')
     for i, in_file in enumerate(in_files):
         d, m, p, k = [filename_to_params[x] for x in in_file.split('.')[0].split('_')]
-        print('{}'.format(i).ljust(3) + ' {}'.format(in_file).ljust(20) + ' {}'.format(d).ljust(10) + ' {}'.format(m).ljust(25) + ' {}'.format(p).ljust(15) + ' {}'.format(k))
+        print('{}'.format(i).ljust(3) + ' {}'.format(in_file).ljust(20) + ' {}'.format(d).ljust(15) + ' {}'.format(m).ljust(25) + ' {}'.format(p).ljust(15) + ' {}'.format(k))
     print()
     file_name = ''
     while file_name not in range(len(in_files)):
@@ -257,7 +257,7 @@ if exp_type == 's' or timing:
 
     method = methods[method_dict[args.method]]
     in_dataset = datasets[dataset_dict[args.dataset]]
-    lang = 'en' if in_dataset in ['MLSUM EN', 'Guardian'] else 'fr'
+    lang = 'en' if in_dataset in ['CNN/DailyMail', 'Guardian'] else 'fr'
     pretraining = args.pretrain
 
     # Read dataset and load summarizer
