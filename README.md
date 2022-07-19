@@ -1,6 +1,6 @@
 # *Newsjam*
 
-This repository contains the code, data, results and deliverables for the *Newsjam* group of the 703 Project Management course of the NLP master's degree at the IDMC, Université de Lorraine.
+This repository contains the code, data and results for the paper `Newsjam: A Multilingual Summarization Tool for News Articles` by Joseph Keenan, Shane Kaszefski-Yaschuk, Adelia Khasanova, and Maxime Méloux presented at eKNOW 2022 and published in the ThinkMind Digital Library.
 
 ## Repository structure:
 - `Annotation_Stats.ipynb` contains the IAA computation module.
@@ -31,3 +31,13 @@ This repository contains the code, data, results and deliverables for the *Newsj
   - `text_processing.py` contains the text pre and post processing functions.
   - `\sum_transformers.ipynb` contains an alternate implementation of summarization using BERT-like models
   - `\utils.py` contains various utility functions for summarization
+  
+ ## Reference
+`@inproceedings{keenan-et-al-2022-newsjam, 
+title={Newsjam: A Multilingual Summarization Tool for News Articles},
+author={Keenan, Joseph and Kaszefski-Yaschuk, Shane and Khasanova, Adelia and Méloux, Maxime},
+ISBN={9781612089867}, 
+url={https://www.thinkmind.org/index.php?view=article&articleid=eknow_2022_3_10_60008}, 
+year={2022}, 
+month={06}, 
+pages={55–61}}`
