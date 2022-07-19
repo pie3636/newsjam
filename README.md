@@ -33,11 +33,13 @@ This repository contains the code, data and results for the paper `Newsjam: A Mu
   - `\utils.py` contains various utility functions for summarization
   
  ## Reference
-`@inproceedings{keenan-et-al-2022-newsjam, 
+```
+@inproceedings{keenan-et-al-2022-newsjam, 
 title={Newsjam: A Multilingual Summarization Tool for News Articles},
 author={Keenan, Joseph and Kaszefski-Yaschuk, Shane and Khasanova, Adelia and Méloux, Maxime},
 ISBN={9781612089867}, 
 url={https://www.thinkmind.org/index.php?view=article&articleid=eknow_2022_3_10_60008}, 
 year={2022}, 
 month={06}, 
-pages={55–61}}`
+pages={55–61}}
+```
